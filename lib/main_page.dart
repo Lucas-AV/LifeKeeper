@@ -1,18 +1,31 @@
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:lifekeeper/style.dart';
 import 'lifepad.dart';
 import 'dart:async';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key, this.numberOfPlayers = 6}) : super(key: key);
-  final int numberOfPlayers;
+  MainPage({Key? key, this.numberOfPlayers = 2, this.base = 40}) : super(key: key);
+  int numberOfPlayers;
+  int base;
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
+
   @override
   Widget build(BuildContext context) {
+    Map playersInfo = {
+      "commander":List.generate(widget.numberOfPlayers+1, (index) => List.generate(widget.numberOfPlayers, (subIndex) => 0)),
+      "initiative":List.generate(widget.numberOfPlayers+1, (index) => false),
+      "attacking":List.generate(widget.numberOfPlayers+1, (index) => false),
+      "ascended":List.generate(widget.numberOfPlayers+1, (index) => false),
+      "monarch":List.generate(widget.numberOfPlayers+1, (index) => false),
+      "life":List.generate(widget.numberOfPlayers+1, (index) => widget.base),
+      "numberOfPlayers":widget.numberOfPlayers,
+      "base":widget.base,
+    };
     double maxHei = MediaQuery.of(context).size.height;
     double maxWid = MediaQuery.of(context).size.width;
 
@@ -29,7 +42,10 @@ class _MainPageState extends State<MainPage> {
                       numberOfPlayers: widget.numberOfPlayers,
                       color: colorsList[j + i * 2 + 1],
                       id: j + i * 2 + 1,
-                    ),
+                      base: widget.base,
+                      value: playersInfo['life'][j + i * 2 + 1],
+                      isAttacking: playersInfo['attacking'][j + i * 2 + 1],
+                    )
                 ],
               ),
             ),
@@ -48,7 +64,10 @@ class _MainPageState extends State<MainPage> {
                       numberOfPlayers: widget.numberOfPlayers,
                       color: colorsList[j + i * 2 + 1],
                       id: j + i * 2 + 1,
-                    ),
+                      base: widget.base,
+                      value: playersInfo['life'][j + i * 2 + 1],
+                      isAttacking: playersInfo['attacking'][j + i * 2 + 1],
+                    )
                 ],
               ),
             ),
@@ -57,18 +76,24 @@ class _MainPageState extends State<MainPage> {
             quarterTurns: (maxHei >= maxWid)?0:3,
             color: colorsList[widget.numberOfPlayers],
             id: widget.numberOfPlayers,
-          ),
+            base: widget.base,
+            value: playersInfo['life'][widget.numberOfPlayers],
+            isAttacking: playersInfo['attacking'][widget.numberOfPlayers],
+          )
         ];
       }
 
       return [
-        for(int i = 1; i < 3; i++)
+        for(int i = 1; i < widget.numberOfPlayers+1; i++)
           LifePad(
             numberOfPlayers: widget.numberOfPlayers,
             quarterTurns: (maxHei >= maxWid)? (i == 1? 2:0):(i == 1? 1:3),
             color: colorsList[i],
             id: i,
-          ),
+            base: widget.base,
+            value: playersInfo['life'][i],
+            isAttacking: playersInfo['attacking'][i],
+          )
       ];
     }
 

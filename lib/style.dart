@@ -1,3 +1,4 @@
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'lifepad.dart';
 
@@ -190,5 +191,206 @@ EdgeInsets lifepadPadding(LifePad widget){
     ),
     bottom: 8,
     top: 5
+  );
+}
+
+Widget lifepadButton(
+  Function onPressed,
+{
+  IconData icon = MdiIcons.cardsOutline,
+  Color iconColor = Colors.white,
+  double multi = .67,
+  double height = 60,
+  double width = 60,
+  bool hasSecond = false,
+}){
+  void voidOnPressed(){
+    onPressed();
+  }
+  return SizedBox(
+    height: height,
+    width: width,
+    child: RawMaterialButton(
+      onPressed: voidOnPressed,
+      child: LayoutBuilder(
+        builder: (context,constraints){
+          return Icon(
+            icon,
+            color: iconColor,
+            size: constraints.maxWidth*multi,
+          );
+        },
+      ),
+    ),
+  );
+}
+
+Widget lifepadButtonOpacity(
+    Function onPressed,
+    {
+      bool condition = true,
+      IconData icon = MdiIcons.cardsOutline,
+      Color iconColor = Colors.white,
+      double multi = .67,
+      double height = 60,
+      double width = 60,
+      bool hasSecond = false,
+    }) {
+  void voidOnPressed(){
+    onPressed();
+  }
+
+  Widget body(){
+    return LayoutBuilder(
+      builder: (context,constraints){
+        return AnimatedOpacity(
+          duration: Duration(milliseconds: 100),
+          opacity: condition? 1:0,
+          child: Icon(
+            icon,
+            color: iconColor,
+            size: constraints.maxWidth*multi,
+          ),
+        );
+      },
+    );
+  }
+
+  return SizedBox(
+    height: height,
+    width: width,
+    child: condition? RawMaterialButton(
+      onPressed: voidOnPressed,
+      child: body(),
+    ) : SizedBox(),
+  );
+}
+
+
+Widget lifepadButtonOpacityDouble(
+    Function onPressed,
+    {
+      bool condition = true,
+      IconData initialIcon = MdiIcons.cardsOutline,
+      IconData afterIcon = MdiIcons.cards,
+      Color iconColor = Colors.white,
+      double multi = .67,
+      double height = 60,
+      double width = 60,
+      bool hasSecond = false,
+    }){
+  void voidOnPressed(){
+    onPressed();
+  }
+  return SizedBox(
+    height: 60,
+    width: 60,
+    child: RawMaterialButton(
+      onPressed: voidOnPressed,
+      child: LayoutBuilder(
+        builder: (context,constraints){
+          return Stack(
+            children: [
+              Icon(
+                initialIcon,
+                color: iconColor,
+                size: constraints.maxWidth*multi,
+              ),
+              AnimatedOpacity(
+                opacity: condition? 1:0,
+                duration: Duration(milliseconds: 150),
+                child: Icon(
+                  afterIcon,
+                  color: iconColor,
+                  size: constraints.maxWidth*multi,
+                ),
+              )
+            ],
+          );
+        },
+      ),
+    ),
+  );
+}
+
+
+
+Widget lifepadButtonOpacityDoubleChange(
+    Function onPressed,
+    {
+      bool condition = true,
+      IconData initialIcon = MdiIcons.cardsOutline,
+      IconData afterIcon = MdiIcons.cards,
+      Color iconColor = Colors.white,
+      double multi = .67,
+      double height = 60,
+      double width = 60,
+      bool hasSecond = false,
+    }){
+  void voidOnPressed(){
+    onPressed();
+  }
+  return SizedBox(
+    height: 60,
+    width: 60,
+    child: RawMaterialButton(
+      onPressed: voidOnPressed,
+      child: LayoutBuilder(
+        builder: (context,constraints){
+          return Stack(
+            children: [
+              AnimatedOpacity(
+                opacity: condition? 0:1,
+                duration: Duration(milliseconds: 150),
+                child: Icon(
+                  initialIcon,
+                  color: iconColor,
+                  size: constraints.maxWidth*multi,
+                ),
+              ),
+              AnimatedOpacity(
+                opacity: condition? 1:0,
+                duration: Duration(milliseconds: 150),
+                child: Icon(
+                  afterIcon,
+                  color: iconColor,
+                  size: constraints.maxWidth*multi,
+                ),
+              )
+            ],
+          );
+        },
+      ),
+    ),
+  );
+}
+
+
+
+Widget highlightContainer({
+  Widget child = const SizedBox(),
+  Color color = Colors.black38,
+  bool condition = false,
+  double borderRadius = 5,
+}){
+  return Stack(
+    alignment: Alignment.center,
+    children: [
+      AnimatedOpacity(
+        duration: Duration(milliseconds: 100),
+        opacity: condition? 1:0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: condition? color:Colors.transparent,
+            borderRadius: BorderRadius.circular(borderRadius)
+          ),
+          child: Opacity(
+            opacity: 0,
+            child: child,
+          ),
+        ),
+      ),
+      child,
+    ],
   );
 }

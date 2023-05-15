@@ -9,11 +9,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    int numberOfPlayers = 3;
+    int base = 40;
+
+
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainPage(),
+      home: MainPage(
+        numberOfPlayers: numberOfPlayers,
+        base: base,
+      ),
     );
   }
 }
-
-

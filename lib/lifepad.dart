@@ -1,3 +1,4 @@
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:lifekeeper/style.dart';
 import 'main_page.dart';
@@ -6,55 +7,59 @@ import 'main.dart';
 import 'dart:math';
 
 class LifePad extends StatefulWidget {
-  LifePad({Key? key, required this.color,this.quarterTurns = 0, this.base = 40, required this.id, required this.numberOfPlayers}) : super(key: key);
+  LifePad({Key? key, this.isAttacking = false, required this.color,this.quarterTurns = 0, this.base = 40, required this.id, required this.numberOfPlayers, this.value = 1}) : super(key: key);
   final int numberOfPlayers;
   final int quarterTurns;
   final Color color;
+  bool isAttacking;
   final int base;
   final int id;
+  int value;
   @override
   State<LifePad> createState() => _LifePadState();
 }
 
 class _LifePadState extends State<LifePad> {
   Timer timeCounter = Timer(Duration(seconds: 0),(){});
-  int value = 1;
-
+  int viewMode = 0, limit = 1;
   @override
   void initState(){
     super.initState();
-    value = widget.base;
   }
 
   Widget counterValueText() {
-    return Container(
-      constraints: BoxConstraints(
-        minHeight: 150,
-        minWidth: 150,
-        // minWidth: double.infinity
-      ),
-      child: FittedBox(
-        child: Text(
-          value.toString(),
-          style: boldTextStyle(),
-          textAlign: TextAlign.center,
-          maxLines: 1,
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context,constraints){
+        return AnimatedContainer(
+          duration: Duration(milliseconds: 100),
+          width: (constraints.maxWidth > constraints.maxHeight? constraints.maxWidth : constraints.maxHeight) * (
+             viewMode == 0? 0.35 : 0.25
+          ),
+          color: Colors.transparent,
+          child: FittedBox(
+            child: Text(
+              widget.value.toString(),
+              style: boldTextStyle(),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+            ),
+          ),
+        );
+      }
     );
   }
 
   Widget counterModifierButton({int num = 1}){
     void onPressed(){
       setState(() {
-        value += num;
+        widget.value += num;
       });
     }
 
     void onLongPress(){
       timeCounter = Timer.periodic(
           const Duration(milliseconds: 100),
-              (timer) {
+          (timer) {
             onPressed();
           }
       );
@@ -99,6 +104,62 @@ class _LifePadState extends State<LifePad> {
               children: [
                 counterValueText(),
                 modifierColumn(),
+
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: lifepadButtonOpacityDouble(
+                    (){
+                      setState(() {
+                        viewMode++;
+                        if(viewMode > limit){
+                          viewMode = 0;
+                        }
+                      });
+                    },
+                    condition: viewMode == 1
+                  ),
+                ),
+
+                Positioned(
+                  left: 0,
+                  bottom: 0,
+                  child: lifepadButtonOpacity(
+                    (){},
+                    icon: MdiIcons.paletteOutline,
+                    condition: viewMode == 1
+                  ),
+                ),
+
+                Positioned(
+                  left: 0,
+                  bottom: 0,
+                  child: highlightContainer(
+                    child: lifepadButtonOpacity(
+                      (){
+                        setState(() {
+                          widget.isAttacking = widget.isAttacking? false:true;
+
+                        });
+                      },
+                      icon: MdiIcons.swordCross,
+                      condition: viewMode == 0,
+                      multi: 0.575
+                    ),
+                    borderRadius: 0,
+                    condition: widget.isAttacking,
+                  ),
+                ),
+
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: lifepadButtonOpacity(
+                    (){},
+                    icon: MdiIcons.diceMultipleOutline,
+                    condition: viewMode == 1
+                  ),
+                ),
               ],
             ),
           ),
