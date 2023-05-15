@@ -33,7 +33,7 @@ class _LifePadState extends State<LifePad> {
         return AnimatedContainer(
           duration: Duration(milliseconds: 100),
           width: (constraints.maxWidth > constraints.maxHeight? constraints.maxWidth : constraints.maxHeight) * (
-             viewMode == 0? 0.35 : 0.25
+             viewMode == 0? 0.35 : 0.35
           ),
           color: Colors.transparent,
           child: FittedBox(
@@ -92,6 +92,24 @@ class _LifePadState extends State<LifePad> {
 
   @override
   Widget build(BuildContext context) {
+    Widget cardsOutlinedButton(){
+      return Positioned(
+        right: 0,
+        top: 0,
+        child: lifepadButtonOpacityDouble(
+          (){
+            setState(() {
+              viewMode++;
+              if(viewMode > limit){
+                viewMode = 0;
+              }
+            });
+          },
+          condition: viewMode == 1
+        ),
+      );
+    }
+
     return Expanded(
       child: RotatedBox(
         quarterTurns: widget.quarterTurns,
@@ -104,23 +122,7 @@ class _LifePadState extends State<LifePad> {
               children: [
                 counterValueText(),
                 modifierColumn(),
-
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: lifepadButtonOpacityDouble(
-                    (){
-                      setState(() {
-                        viewMode++;
-                        if(viewMode > limit){
-                          viewMode = 0;
-                        }
-                      });
-                    },
-                    condition: viewMode == 1
-                  ),
-                ),
-
+                cardsOutlinedButton(),
                 Positioned(
                   left: 0,
                   bottom: 0,
@@ -131,6 +133,7 @@ class _LifePadState extends State<LifePad> {
                   ),
                 ),
 
+                if(false)
                 Positioned(
                   left: 0,
                   bottom: 0,
@@ -139,7 +142,6 @@ class _LifePadState extends State<LifePad> {
                       (){
                         setState(() {
                           widget.isAttacking = widget.isAttacking? false:true;
-
                         });
                       },
                       icon: MdiIcons.swordCross,
@@ -166,5 +168,7 @@ class _LifePadState extends State<LifePad> {
         ),
       ),
     );
+
   }
 }
+
