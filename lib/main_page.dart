@@ -44,7 +44,6 @@ class _MainPageState extends State<MainPage> {
                       id: j + i * 2 + 1,
                       base: widget.base,
                       value: playersInfo['life'][j + i * 2 + 1],
-                      isAttacking: playersInfo['attacking'][j + i * 2 + 1],
                     )
                 ],
               ),
@@ -66,7 +65,6 @@ class _MainPageState extends State<MainPage> {
                       id: j + i * 2 + 1,
                       base: widget.base,
                       value: playersInfo['life'][j + i * 2 + 1],
-                      isAttacking: playersInfo['attacking'][j + i * 2 + 1],
                     )
                 ],
               ),
@@ -78,7 +76,6 @@ class _MainPageState extends State<MainPage> {
             id: widget.numberOfPlayers,
             base: widget.base,
             value: playersInfo['life'][widget.numberOfPlayers],
-            isAttacking: playersInfo['attacking'][widget.numberOfPlayers],
           )
         ];
       }
@@ -92,7 +89,6 @@ class _MainPageState extends State<MainPage> {
             id: i,
             base: widget.base,
             value: playersInfo['life'][i],
-            isAttacking: playersInfo['attacking'][i],
           )
       ];
     }

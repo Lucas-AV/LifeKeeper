@@ -21,7 +21,8 @@ class LifePad extends StatefulWidget {
 
 class _LifePadState extends State<LifePad> {
   Timer timeCounter = Timer(Duration(seconds: 0),(){});
-  int viewMode = 0, limit = 1;
+  String viewMode = "minimalist";
+  int limit = 1;
   @override
   void initState(){
     super.initState();
@@ -32,9 +33,7 @@ class _LifePadState extends State<LifePad> {
       builder: (context,constraints){
         return AnimatedContainer(
           duration: Duration(milliseconds: 100),
-          width: (constraints.maxWidth > constraints.maxHeight? constraints.maxWidth : constraints.maxHeight) * (
-             viewMode == 0? 0.35 : 0.35
-          ),
+          width: (constraints.maxWidth > constraints.maxHeight? constraints.maxWidth : constraints.maxHeight) * (0.35),
           color: Colors.transparent,
           child: FittedBox(
             child: Text(
@@ -94,22 +93,86 @@ class _LifePadState extends State<LifePad> {
   Widget build(BuildContext context) {
     Widget cardsOutlinedButton(){
       return Positioned(
-        right: 0,
-        top: 0,
+        right: 0, top: 0,
         child: lifepadButtonOpacityDouble(
           (){
             setState(() {
-              viewMode++;
-              if(viewMode > limit){
-                viewMode = 0;
-              }
+              viewMode = viewMode == "minimalist" || viewMode != "detailed"? "detailed":"minimalist";
             });
           },
-          condition: viewMode == 1
+          initialIcon: MdiIcons.cardsOutline,
+          afterIcon: MdiIcons.cards,
+          condition: viewMode == "detailed"
         ),
       );
     }
-
+    Widget diceMultipleOutlineButton(){
+      return Positioned(
+        right: 0, bottom: 0,
+        child: lifepadButtonOpacityDouble(
+          (){
+            setState(() {
+              viewMode = viewMode == "rollDice"? "detailed":"rollDice";
+            });
+          },
+          initialIcon: MdiIcons.diceMultipleOutline,
+          afterIcon: MdiIcons.diceMultiple,
+          condition: viewMode == "rollDice"
+        ),
+      );
+    }
+    Widget paletteOutlineButton(){
+      return Positioned(
+        left: 0, bottom: 0,
+        child: lifepadButtonOpacityDoubleChange(
+          (){
+            setState(() {
+              viewMode = viewMode == "colorChange"? "detailed":"colorChange";
+            });
+          },
+          initialIcon: MdiIcons.paletteOutline,
+          afterIcon: MdiIcons.palette,
+          condition: viewMode == "colorChange"
+        ),
+      );
+    }
+    Widget positionedButton(
+      Function onPressed, {
+        bool condition = true,
+        IconData initialIcon = MdiIcons.cardsOutline,
+        IconData afterIcon = MdiIcons.cards,
+        String position = "topRight",
+        String initialMode = "minimalist",
+        String afterMode = "detailed",
+      }
+    ){
+      Widget child = lifepadButtonOpacityDoubleChange(
+        (){
+          setState(() {
+            viewMode = viewMode == "colorChange"? "detailed":"colorChange";
+          });
+        },
+        initialIcon: MdiIcons.paletteOutline,
+        afterIcon: MdiIcons.palette,
+        condition: viewMode == "colorChange"
+      );
+      return position == "topRight"? Positioned(
+        right: 0, top: 0,
+        child: child,
+      ) :
+      position == "bottomRight"? Positioned(
+        right: 0, top: 0,
+        child: child,
+      ) :
+      position == "bottomLeft"? Positioned(
+        left: 0, bottom: 0,
+        child: child,
+      ) :
+      Positioned(
+        left: 0, top: 0,
+        child: child,
+      );
+    }
     return Expanded(
       child: RotatedBox(
         quarterTurns: widget.quarterTurns,
@@ -123,20 +186,11 @@ class _LifePadState extends State<LifePad> {
                 counterValueText(),
                 modifierColumn(),
                 cardsOutlinedButton(),
-                Positioned(
-                  left: 0,
-                  bottom: 0,
-                  child: lifepadButtonOpacity(
-                    (){},
-                    icon: MdiIcons.paletteOutline,
-                    condition: viewMode == 1
-                  ),
-                ),
+                paletteOutlineButton(),
 
                 if(false)
                 Positioned(
-                  left: 0,
-                  bottom: 0,
+                  left: 0, bottom: 0,
                   child: highlightContainer(
                     child: lifepadButtonOpacity(
                       (){
@@ -153,22 +207,13 @@ class _LifePadState extends State<LifePad> {
                   ),
                 ),
 
-                Positioned(
-                  right: 0,
-                  bottom: 0,
-                  child: lifepadButtonOpacity(
-                    (){},
-                    icon: MdiIcons.diceMultipleOutline,
-                    condition: viewMode == 1
-                  ),
-                ),
+                diceMultipleOutlineButton()
               ],
             ),
           ),
         ),
       ),
     );
-
   }
 }
 
