@@ -106,6 +106,7 @@ class _LifePadState extends State<LifePad> {
         ),
       );
     }
+
     Widget diceMultipleOutlineButton(){
       return Positioned(
         right: 0, bottom: 0,
@@ -121,10 +122,12 @@ class _LifePadState extends State<LifePad> {
         ),
       );
     }
+
     Widget paletteOutlineButton(){
       return Positioned(
-        left: 0, bottom: 0,
-        child: lifepadButtonOpacityDoubleChange(
+        left: 0,
+        bottom: 0,
+        child: lifepadButtonOpacityDouble(
           (){
             setState(() {
               viewMode = viewMode == "colorChange"? "detailed":"colorChange";
@@ -132,47 +135,11 @@ class _LifePadState extends State<LifePad> {
           },
           initialIcon: MdiIcons.paletteOutline,
           afterIcon: MdiIcons.palette,
-          condition: viewMode == "colorChange"
+          condition: viewMode == "colorChange",
         ),
       );
     }
-    Widget positionedButton(
-      Function onPressed, {
-        bool condition = true,
-        IconData initialIcon = MdiIcons.cardsOutline,
-        IconData afterIcon = MdiIcons.cards,
-        String position = "topRight",
-        String initialMode = "minimalist",
-        String afterMode = "detailed",
-      }
-    ){
-      Widget child = lifepadButtonOpacityDoubleChange(
-        (){
-          setState(() {
-            viewMode = viewMode == "colorChange"? "detailed":"colorChange";
-          });
-        },
-        initialIcon: MdiIcons.paletteOutline,
-        afterIcon: MdiIcons.palette,
-        condition: viewMode == "colorChange"
-      );
-      return position == "topRight"? Positioned(
-        right: 0, top: 0,
-        child: child,
-      ) :
-      position == "bottomRight"? Positioned(
-        right: 0, top: 0,
-        child: child,
-      ) :
-      position == "bottomLeft"? Positioned(
-        left: 0, bottom: 0,
-        child: child,
-      ) :
-      Positioned(
-        left: 0, top: 0,
-        child: child,
-      );
-    }
+
     return Expanded(
       child: RotatedBox(
         quarterTurns: widget.quarterTurns,
@@ -185,8 +152,9 @@ class _LifePadState extends State<LifePad> {
               children: [
                 counterValueText(),
                 modifierColumn(),
-                cardsOutlinedButton(),
                 paletteOutlineButton(),
+                cardsOutlinedButton(),
+                diceMultipleOutlineButton(),
 
                 if(false)
                 Positioned(
@@ -207,7 +175,6 @@ class _LifePadState extends State<LifePad> {
                   ),
                 ),
 
-                diceMultipleOutlineButton()
               ],
             ),
           ),
@@ -216,4 +183,3 @@ class _LifePadState extends State<LifePad> {
     );
   }
 }
-

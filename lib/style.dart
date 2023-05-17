@@ -394,3 +394,38 @@ Widget highlightContainer({
     ],
   );
 }
+
+
+Widget positionedButton(
+    Function onPressed, {
+      bool condition = true,
+      IconData initialIcon = MdiIcons.cardsOutline,
+      IconData afterIcon = MdiIcons.cards,
+      String position = "topRight",
+      String initialMode = "minimalist",
+      String afterMode = "detailed",
+    }
+){
+  Widget child = lifepadButtonOpacityDoubleChange(
+    onPressed,
+    initialIcon: initialIcon,
+    afterIcon: afterIcon,
+    condition: condition
+  );
+  return position == "topRight"? Positioned(
+    right: 0, top: 0,
+    child: child,
+  ) :
+  position == "bottomRight"? Positioned(
+    right: 0, top: 0,
+    child: child,
+  ) :
+  position == "bottomLeft"? Positioned(
+    left: 0, bottom: 0,
+    child: child,
+  ) :
+  Positioned(
+    left: 0, top: 0,
+    child: child,
+  );
+}
