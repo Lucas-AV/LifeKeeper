@@ -34,13 +34,27 @@ class _MainPageState extends State<MainPage> {
         return [
           for(int i = 0; i < widget.numberOfPlayers/2; i++)
             Expanded(
-              child: Row(
+              child: (maxHei <= maxWid)?
+              Column(
+                children: [
+                  for(int j = 0; j < 2; j++)
+                    LifePad(
+                      quarterTurns: (maxHei <= maxWid)? (j == 0? 2:0):(j == 0? 3:1),
+                      numberOfPlayers: widget.numberOfPlayers,
+                      color: colorsList[j + i * 2 + 1-1],
+                      id: j + i * 2 + 1,
+                      base: widget.base,
+                      value: playersInfo['life'][j + i * 2 + 1],
+                    )
+                ],
+              ) :
+              Row(
                 children: [
                   for(int j = 0; j < 2; j++)
                     LifePad(
                       quarterTurns: (maxHei >= maxWid)? (j == 0? 1:3):(j == 0? 3:1),
                       numberOfPlayers: widget.numberOfPlayers,
-                      color: colorsList[j + i * 2 + 1],
+                      color: colorsList[j + i * 2 + 1-1],
                       id: j + i * 2 + 1,
                       base: widget.base,
                       value: playersInfo['life'][j + i * 2 + 1],
@@ -55,24 +69,38 @@ class _MainPageState extends State<MainPage> {
         return [
           for(int i = 0; i < (widget.numberOfPlayers - widget.numberOfPlayers%2)/2; i++)
             Expanded(
-              child: Row(
+              child: (maxHei <= maxWid)?
+                Column(
                 children: [
                   for(int j = 0; j < 2; j++)
                     LifePad(
-                      quarterTurns: (maxHei >= maxWid)? (j == 0? 1:3):(j == 0? 3:1),
+                      quarterTurns: (maxHei <= maxWid)? (j == 0? 2:0):(j == 0? 3:1),
                       numberOfPlayers: widget.numberOfPlayers,
-                      color: colorsList[j + i * 2 + 1],
+                      color: colorsList[j + i * 2 + 1-1],
                       id: j + i * 2 + 1,
                       base: widget.base,
                       value: playersInfo['life'][j + i * 2 + 1],
                     )
                 ],
-              ),
+              ) :
+                Row(
+                  children: [
+                    for(int j = 0; j < 2; j++)
+                      LifePad(
+                      quarterTurns: (maxHei >= maxWid)? (j == 0? 1:3):(j == 0? 3:1),
+                      numberOfPlayers: widget.numberOfPlayers,
+                      color: colorsList[j + i * 2 + 1-1],
+                      id: j + i * 2 + 1,
+                      base: widget.base,
+                      value: playersInfo['life'][j + i * 2 + 1],
+                    )
+                  ],
+                ),
             ),
           LifePad(
             numberOfPlayers: widget.numberOfPlayers,
             quarterTurns: (maxHei >= maxWid)?0:3,
-            color: colorsList[widget.numberOfPlayers],
+            color: colorsList[widget.numberOfPlayers-1],
             id: widget.numberOfPlayers,
             base: widget.base,
             value: playersInfo['life'][widget.numberOfPlayers],
@@ -85,7 +113,7 @@ class _MainPageState extends State<MainPage> {
           LifePad(
             numberOfPlayers: widget.numberOfPlayers,
             quarterTurns: (maxHei >= maxWid)? (i == 1? 2:0):(i == 1? 1:3),
-            color: colorsList[i],
+            color: colorsList[i-1],
             id: i,
             base: widget.base,
             value: playersInfo['life'][i],

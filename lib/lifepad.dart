@@ -33,7 +33,7 @@ class _LifePadState extends State<LifePad> {
     return SizedBox(
       child: RawMaterialButton(
         onPressed: (){
-          changeViewMode(viewMode == "detailed", "minimalist", "detailed");
+          changeViewMode(viewMode != "minimalist", "minimalist", "detailed");
         },
         child: LayoutBuilder(
           builder: (context,constraints){
@@ -129,12 +129,12 @@ class _LifePadState extends State<LifePad> {
   Widget cardsOutlinedButton(){
     return positionedButton(
       (){
-        changeViewMode(viewMode == "minimalist" || viewMode != "detailed","detailed","minimalist");
+        changeViewMode(viewMode == "commander","detailed","commander");
       },
-      visibleCondition: true,
+      visibleCondition: viewMode != "minimalist",
       initialIcon: MdiIcons.cardsOutline,
       afterIcon: MdiIcons.cards,
-      condition: viewMode == "detailed",
+      condition: viewMode == "commander",
       position: "topRight",
     );
   }
@@ -200,6 +200,19 @@ class _LifePadState extends State<LifePad> {
     );
   }
 
+  Widget lifeStack(){
+    return Stack(
+      alignment: Alignment.center,
+      children: viewMode == "minimalist"? [
+        modifierColumn(),
+        counterValueText(),
+      ] : [
+        counterValueText(),
+        modifierColumn(),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -213,83 +226,30 @@ class _LifePadState extends State<LifePad> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: viewMode != "detailed"? [
-                    modifierColumn(),
-                    counterValueText(),
-                  ] : [
-                    counterValueText(),
-                    modifierColumn(),
-                  ],
-                ),
-
+                lifeStack(),
                 paletteOutlineButton(),
-                if(viewMode == "detailed")
-                cardsOutlinedButton(),
                 diceMultipleOutlineButton(),
+                cardsOutlinedButton(),
                 tokensButton(),
 
-                Visibility(
+                lifepadSection(
+                  (){
+                    changeViewMode(viewMode == "colorChange","detailed","colorChange");
+                  },
+                  (){
+                    setState(() {
+                      widget.color = colorsList[Random().nextInt(colorsList.length)];
+                    });
+                  },
+                  List<Widget>.generate(colorsList.length, (index) => colorButton(color: colorsList[index])),
                   visible: viewMode == "colorChange",
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 300),
-                    width: double.infinity,
-                    decoration: lifepadBoxDecoration(widget.color),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 60,
-                          width: double.infinity,
-                          color: Colors.black26,
-                          child: LayoutBuilder(
-                            builder: (context,constraints){
-                              return Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  lifepadButton(
-                                    (){
-                                      changeViewMode(viewMode == "colorChange","detailed","colorChange");
-                                    },
-                                    icon: Icons.close,
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 5),
-                                      child: FittedBox(
-                                        child: Text(
-                                          "CHOOSE A COLOR",
-                                          style: boldTextStyle()
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  lifepadButton(
-                                    (){
-                                      setState(() {
-                                        widget.color = colorsList[Random().nextInt(colorsList.length)];
-                                      });
-                                    },
-                                    icon: Icons.question_mark,
-                                  ),
-                                ],
-                              );
-                            },
-                          )
-                        ),
-                        Expanded(
-                          child: GridView.count(
-                            crossAxisCount: 4,
-                            children: List<Widget>.generate(colorsList.length, (index) => colorButton(color: colorsList[index])),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                  color: widget.color,
                 ),
+
                 lifepadSection(
                   (){
                     changeViewMode(viewMode == "rollDice", "detailed", "rollDice");
+                    diceTypeRoll = 0;
                   },
                   (){
                     setState(() {
