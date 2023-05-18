@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'lifepad.dart';
 
 List<Color> colorsList = [
-  Colors.transparent,
   const Color(0xffB22222),
   const Color(0xff1E8449),
   const Color(0xff355691),
@@ -23,7 +22,7 @@ List<Color> colorsList = [
   const Color(0xff20A39E),
   const Color(0xff0B3948),
   Colors.deepPurple,
-  Colors.white,
+  // Colors.white,
 ];
 
 Map<String, Color> colorMap = {
@@ -326,7 +325,8 @@ Widget lifepadButtonOpacityDoubleChange(
       double height = 60,
       double width = 60,
       bool hasSecond = false,
-    }){
+    })
+{
   void voidOnPressed(){
     onPressed();
   }
@@ -399,6 +399,7 @@ Widget highlightContainer({
 Widget positionedButton(
     Function onPressed, {
       bool condition = true,
+      bool visibleCondition = true,
       IconData initialIcon = MdiIcons.cardsOutline,
       IconData afterIcon = MdiIcons.cards,
       String position = "topRight",
@@ -412,12 +413,13 @@ Widget positionedButton(
     afterIcon: afterIcon,
     condition: condition
   );
-  return position == "topRight"? Positioned(
+
+  Widget childPositioned = position == "topRight"? Positioned(
     right: 0, top: 0,
     child: child,
   ) :
   position == "bottomRight"? Positioned(
-    right: 0, top: 0,
+    right: 0, bottom: 0,
     child: child,
   ) :
   position == "bottomLeft"? Positioned(
@@ -426,6 +428,16 @@ Widget positionedButton(
   ) :
   Positioned(
     left: 0, top: 0,
+    child: child,
+  );
+  return Visibility(
+    visible: visibleCondition,
+    child: childPositioned,
+  );
+}
+
+Widget lifepadSection(Widget child){
+  return Visibility(
     child: child,
   );
 }

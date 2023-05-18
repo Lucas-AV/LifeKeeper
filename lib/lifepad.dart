@@ -10,7 +10,7 @@ class LifePad extends StatefulWidget {
   LifePad({Key? key, this.isAttacking = false, required this.color,this.quarterTurns = 0, this.base = 40, required this.id, required this.numberOfPlayers, this.value = 1}) : super(key: key);
   final int numberOfPlayers;
   final int quarterTurns;
-  final Color color;
+  Color color;
   bool isAttacking;
   final int base;
   final int id;
@@ -23,6 +23,7 @@ class _LifePadState extends State<LifePad> {
   Timer timeCounter = Timer(Duration(seconds: 0),(){});
   String viewMode = "minimalist";
   int limit = 1;
+
   @override
   void initState(){
     super.initState();
@@ -79,7 +80,6 @@ class _LifePadState extends State<LifePad> {
       ),
     );
   }
-
   Widget modifierColumn(){
     return Column(
       children: [
@@ -89,92 +89,157 @@ class _LifePadState extends State<LifePad> {
     );
   }
 
+  void changeViewMode(bool modeCondition,String isTrue, String isFalse){
+    setState(() {
+      viewMode = modeCondition? isTrue:isFalse;
+    });
+  }
+
+  Widget diceMultipleOutlineButton(){
+    return positionedButton(
+      (){
+        changeViewMode(viewMode == "rollDice","detailed","rollDice");
+      },
+      visibleCondition: viewMode != 'minimalist',
+      initialIcon: MdiIcons.diceMultipleOutline,
+      afterIcon: MdiIcons.diceMultiple,
+      condition: viewMode == "rollDice",
+      position: 'bottomRight',
+    );
+  }
+  Widget paletteOutlineButton(){
+    return positionedButton(
+      (){
+        changeViewMode(viewMode == "colorChange","detailed","colorChange");
+      },
+      visibleCondition: viewMode != 'minimalist',
+      initialIcon: MdiIcons.paletteOutline,
+      afterIcon: MdiIcons.palette,
+      condition: viewMode == "colorChange",
+      position: 'bottomLeft',
+    );
+  }
+  Widget cardsOutlinedButton(){
+    return positionedButton(
+      (){
+        changeViewMode(viewMode == "minimalist" || viewMode != "detailed","detailed","minimalist");
+      },
+      visibleCondition: true,
+      initialIcon: MdiIcons.cardsOutline,
+      afterIcon: MdiIcons.cards,
+      condition: viewMode == "detailed",
+      position: "topRight",
+    );
+  }
+  Widget tokensButton(){
+    return positionedButton(
+      (){
+        changeViewMode(viewMode == "tokensEdit","detailed","tokensEdit");
+      },
+      visibleCondition: viewMode != 'minimalist',
+      initialIcon: MdiIcons.notebookEditOutline,
+      afterIcon: MdiIcons.notebookEdit,
+      condition: viewMode == "tokensEdit",
+      position: 'topLeft',
+    );
+  }
+  Widget colorButton({Color color = Colors.red}){
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        color: color,
+        child: lifepadButtonOpacityDoubleChange(
+          (){
+            setState(() {
+              widget.color = color;
+            });
+          },
+          initialIcon: Icons.check_box_outline_blank,
+          afterIcon: Icons.check_box,
+          condition: widget.color == color,
+        )
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget cardsOutlinedButton(){
-      return Positioned(
-        right: 0, top: 0,
-        child: lifepadButtonOpacityDouble(
-          (){
-            setState(() {
-              viewMode = viewMode == "minimalist" || viewMode != "detailed"? "detailed":"minimalist";
-            });
-          },
-          initialIcon: MdiIcons.cardsOutline,
-          afterIcon: MdiIcons.cards,
-          condition: viewMode == "detailed"
-        ),
-      );
-    }
-
-    Widget diceMultipleOutlineButton(){
-      return Positioned(
-        right: 0, bottom: 0,
-        child: lifepadButtonOpacityDouble(
-          (){
-            setState(() {
-              viewMode = viewMode == "rollDice"? "detailed":"rollDice";
-            });
-          },
-          initialIcon: MdiIcons.diceMultipleOutline,
-          afterIcon: MdiIcons.diceMultiple,
-          condition: viewMode == "rollDice"
-        ),
-      );
-    }
-
-    Widget paletteOutlineButton(){
-      return Positioned(
-        left: 0,
-        bottom: 0,
-        child: lifepadButtonOpacityDouble(
-          (){
-            setState(() {
-              viewMode = viewMode == "colorChange"? "detailed":"colorChange";
-            });
-          },
-          initialIcon: MdiIcons.paletteOutline,
-          afterIcon: MdiIcons.palette,
-          condition: viewMode == "colorChange",
-        ),
-      );
-    }
-
     return Expanded(
       child: RotatedBox(
         quarterTurns: widget.quarterTurns,
         child: Padding(
           padding: lifepadPadding(widget),
-          child: Container(
+          child: AnimatedContainer(
+            duration: Duration(milliseconds: 100),
             decoration: lifepadBoxDecoration(widget.color),
             child: Stack(
               alignment: Alignment.center,
               children: [
                 counterValueText(),
                 modifierColumn(),
+
                 paletteOutlineButton(),
                 cardsOutlinedButton(),
                 diceMultipleOutlineButton(),
+                tokensButton(),
 
-                if(false)
-                Positioned(
-                  left: 0, bottom: 0,
-                  child: highlightContainer(
-                    child: lifepadButtonOpacity(
-                      (){
-                        setState(() {
-                          widget.isAttacking = widget.isAttacking? false:true;
-                        });
-                      },
-                      icon: MdiIcons.swordCross,
-                      condition: viewMode == 0,
-                      multi: 0.575
+                Visibility(
+                  visible: viewMode == "colorChange",
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    width: double.infinity,
+                    decoration: lifepadBoxDecoration(widget.color),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 60,
+                          width: double.infinity,
+                          color: Colors.black26,
+                          child: LayoutBuilder(
+                            builder: (context,constraints){
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  lifepadButton(
+                                    (){
+                                      changeViewMode(viewMode == "colorChange","detailed","colorChange");
+                                    },
+                                    icon: Icons.close,
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 5),
+                                      child: FittedBox(
+                                        child: Text(
+                                          "CHOOSE A COLOR",
+                                          style: boldTextStyle()
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  lifepadButton(
+                                    (){
+                                      setState(() {
+                                        widget.color = colorsList[Random().nextInt(colorsList.length)];
+                                      });
+                                    },
+                                    icon: Icons.question_mark,
+                                  ),
+                                ],
+                              );
+                            },
+                          )
+                        ),
+                        Expanded(
+                          child: GridView.count(
+                            crossAxisCount: 4,
+                            children: List<Widget>.generate(colorsList.length, (index) => colorButton(color: colorsList[index])),
+                          ),
+                        )
+                      ],
                     ),
-                    borderRadius: 0,
-                    condition: widget.isAttacking,
                   ),
-                ),
-
+                )
               ],
             ),
           ),
