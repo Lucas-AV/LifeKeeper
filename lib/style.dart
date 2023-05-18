@@ -19,7 +19,6 @@ List<Color> colorsList = [
 
   const Color(0xff990099),
   const Color(0xff484743),
-  const Color(0xff20A39E),
   const Color(0xff0B3948),
   Colors.deepPurple,
   // Colors.white,
@@ -436,8 +435,82 @@ Widget positionedButton(
   );
 }
 
-Widget lifepadSection(Widget child){
+Widget lifepadSection(Function onClose, Function onRandom,List<Widget> children, {int crossAxisCount = 4,String title = "ROLL A DICE",bool visible = true,Color color = Colors.red}){
   return Visibility(
-    child: child,
+    visible: visible,
+    child: AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      width: double.infinity,
+      decoration: lifepadBoxDecoration(color),
+      child: Column(
+        children: [
+          Container(
+              height: 60,
+              width: double.infinity,
+              color: Colors.black26,
+              child: LayoutBuilder(
+                builder: (context,constraints){
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      lifepadButton(
+                        (){
+                          onClose();
+                        },
+                        icon: Icons.close,
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 5),
+                          child: FittedBox(
+                            child: Text(
+                              title,
+                              style: boldTextStyle()
+                            ),
+                          ),
+                        ),
+                      ),
+                      lifepadButton(
+                        (){
+                          onRandom();
+                        },
+                        icon: Icons.question_mark,
+                      ),
+                    ],
+                  );
+                },
+              )
+          ),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: crossAxisCount,
+              children: children,
+            ),
+          )
+        ],
+      ),
+    ),
   );
 }
+
+
+Map dicesMap = {
+  "normal":{
+    4:MdiIcons.diceD4,
+    6:MdiIcons.diceD6,
+    8:MdiIcons.diceD8,
+    10:MdiIcons.diceD10,
+    12:MdiIcons.diceD12,
+    20:MdiIcons.diceD20,
+  },
+  "outlined":{
+    4:MdiIcons.diceD4Outline,
+    6:MdiIcons.diceD6Outline,
+    8:MdiIcons.diceD8Outline,
+    10:MdiIcons.diceD10Outline,
+    12:MdiIcons.diceD12Outline,
+    20:MdiIcons.diceD20Outline,
+  }
+};
+
+List dicesValues = [4,6,8,10,12,20];

@@ -22,7 +22,7 @@ class LifePad extends StatefulWidget {
 class _LifePadState extends State<LifePad> {
   Timer timeCounter = Timer(Duration(seconds: 0),(){});
   String viewMode = "minimalist";
-  int limit = 1;
+  int diceTypeRoll = 0;
 
   @override
   void initState(){
@@ -30,22 +30,29 @@ class _LifePadState extends State<LifePad> {
   }
 
   Widget counterValueText() {
-    return LayoutBuilder(
-      builder: (context,constraints){
-        return AnimatedContainer(
-          duration: Duration(milliseconds: 100),
-          width: (constraints.maxWidth > constraints.maxHeight? constraints.maxWidth : constraints.maxHeight) * (0.35),
-          color: Colors.transparent,
-          child: FittedBox(
-            child: Text(
-              widget.value.toString(),
-              style: boldTextStyle(),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-            ),
-          ),
-        );
-      }
+    return SizedBox(
+      child: RawMaterialButton(
+        onPressed: (){
+          changeViewMode(viewMode == "detailed", "minimalist", "detailed");
+        },
+        child: LayoutBuilder(
+          builder: (context,constraints){
+            return AnimatedContainer(
+              duration: Duration(milliseconds: 100),
+              width: (constraints.maxWidth > constraints.maxHeight? constraints.maxWidth : constraints.maxHeight) * (0.35),
+              color: Colors.transparent,
+              child: FittedBox(
+                child: Text(
+                  widget.value.toString(),
+                  style: boldTextStyle(),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                ),
+              ),
+            );
+          }
+        ),
+      ),
     );
   }
 
@@ -81,10 +88,10 @@ class _LifePadState extends State<LifePad> {
     );
   }
   Widget modifierColumn(){
-    return Column(
+    return Row(
       children: [
-        counterModifierButton(num: 1),
         counterModifierButton(num: -1),
+        counterModifierButton(num: 1),
       ],
     );
   }
@@ -143,6 +150,18 @@ class _LifePadState extends State<LifePad> {
       position: 'topLeft',
     );
   }
+
+  Widget closeButton(){
+    return positionedButton(
+      (){
+        changeViewMode(viewMode == "detailed", "minimalist", "detailed");
+      },
+      position: "topLeft",
+      initialIcon: MdiIcons.close,
+      afterIcon: MdiIcons.close,
+    );
+  }
+
   Widget colorButton({Color color = Colors.red}){
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -162,6 +181,25 @@ class _LifePadState extends State<LifePad> {
     );
   }
 
+
+  Widget diceButton({int value = 4}){
+    return Padding(
+      padding: EdgeInsets.zero,
+      child: Container(
+        child: lifepadButtonOpacityDoubleChange(
+          (){
+            setState(() {
+              diceTypeRoll = value;
+            });
+          },
+          initialIcon: dicesMap["outlined"][value],
+          afterIcon: dicesMap["normal"][value],
+          condition: diceTypeRoll == value,
+        )
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -175,10 +213,19 @@ class _LifePadState extends State<LifePad> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                counterValueText(),
-                modifierColumn(),
+                Stack(
+                  alignment: Alignment.center,
+                  children: viewMode != "detailed"? [
+                    modifierColumn(),
+                    counterValueText(),
+                  ] : [
+                    counterValueText(),
+                    modifierColumn(),
+                  ],
+                ),
 
                 paletteOutlineButton(),
+                if(viewMode == "detailed")
                 cardsOutlinedButton(),
                 diceMultipleOutlineButton(),
                 tokensButton(),
@@ -239,7 +286,22 @@ class _LifePadState extends State<LifePad> {
                       ],
                     ),
                   ),
-                )
+                ),
+                lifepadSection(
+                  (){
+                    changeViewMode(viewMode == "rollDice", "detailed", "rollDice");
+                  },
+                  (){
+                    setState(() {
+                      diceTypeRoll = dicesValues[Random().nextInt(dicesValues.length)];
+                    });
+                  },
+                  List.generate(dicesValues.length, (index) => diceButton(value: dicesValues[index])),
+                  visible: viewMode == "rollDice",
+                  title: "ROLL A DICE",
+                  color: widget.color,
+                  crossAxisCount: 4,
+                ),
               ],
             ),
           ),
