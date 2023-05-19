@@ -123,34 +123,37 @@ class _MainPageState extends State<MainPage> {
     }
 
     Widget centerButton(){
-      return Container(
-          height: 55,
-          width: 55,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            color: Colors.black38,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black,
-                blurRadius: 1.1
-              ),
-            ],
-          ),
-          child: GestureDetector(
-            onTap: (){
-              setState(() {
-                widget.numberOfPlayers++;
-                if(widget.numberOfPlayers > 6){
-                  widget.numberOfPlayers = 2;
-                }
-              });
-            },
-            child: LayoutBuilder(
-              builder: (context,constraints){
-                return Icon(MdiIcons.cubeOutline,color: Colors.white,size: constraints.maxWidth*0.7,);
+      return RotatedBox(
+        quarterTurns: (maxHei >= maxWid)? 0:3,
+        child: Container(
+            height: 55,
+            width: 55,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              color: Colors.black38,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black,
+                  blurRadius: 1.1
+                ),
+              ],
+            ),
+            child: GestureDetector(
+              onTap: (){
+                setState(() {
+                  widget.numberOfPlayers++;
+                  if(widget.numberOfPlayers > 6){
+                    widget.numberOfPlayers = 2;
+                  }
+                });
               },
+              child: LayoutBuilder(
+                builder: (context,constraints){
+                  return Icon(MdiIcons.cubeOutline,color: Colors.white,size: constraints.maxWidth*0.7,);
+                },
+              )
             )
-          )
+        ),
       );
     }
 
@@ -171,7 +174,19 @@ class _MainPageState extends State<MainPage> {
                 children: buildChildren(),
               ),
               widget.numberOfPlayers % 4 == 0 || widget.numberOfPlayers < 5?
-                centerButton() : Column(
+                centerButton() : (maxHei >= maxWid)? Column(
+                children: [
+                  Expanded(
+                    flex: 15,
+                    child: SizedBox(),
+                  ),
+                  centerButton(),
+                  Expanded(
+                    flex: 7,
+                    child: SizedBox(),
+                  )
+                ],
+              ) : Row(
                 children: [
                   Expanded(
                     flex: 15,
