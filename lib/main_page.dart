@@ -153,6 +153,9 @@ class _MainPageState extends State<MainPage> {
     }
 
     void resetPage(){
+      setState(() {
+        centerButtonClicked = false;
+      });
       Navigator.pop(context);
       Navigator.push(
         context,
