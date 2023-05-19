@@ -2,6 +2,27 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:flutter/material.dart';
 import 'lifepad.dart';
 
+Map dicesMap = {
+  "normal":{
+    4:MdiIcons.diceD4,
+    6:MdiIcons.diceD6,
+    8:MdiIcons.diceD8,
+    10:MdiIcons.diceD10,
+    12:MdiIcons.diceD12,
+    20:MdiIcons.diceD20,
+  },
+  "outlined":{
+    4:MdiIcons.diceD4Outline,
+    6:MdiIcons.diceD6Outline,
+    8:MdiIcons.diceD8Outline,
+    10:MdiIcons.diceD10Outline,
+    12:MdiIcons.diceD12Outline,
+    20:MdiIcons.diceD20Outline,
+  }
+};
+
+List dicesValues = [4,6,8,10,12,20];
+
 List<Color> colorsList = [
   const Color(0xffB22222),
   const Color(0xff1E8449),
@@ -50,7 +71,6 @@ Map<String, Color> colorMap = {
   "Jet - Matte Sleeves": const Color.fromRGBO(32,27,26,1),
   "Lagoon - Matte Dual Sleeves": const Color.fromRGBO(87,138,174,1),
   "Lime - Matte Sleeves": const Color.fromRGBO(154,184,85,1),
-  "Magenta - Matte Sleeves": const Color.fromRGBO(175,27,86,1),
   "Midnight Blue - Matte Sleeves": const Color.fromRGBO(0,35,67,1),
   "Might - Dual Matte Sleeves": const Color.fromRGBO(0,102,60,1),
   "Mint - Classic Sleeves": const Color.fromRGBO(81,179,154,1),
@@ -197,7 +217,7 @@ Widget lifepadButton(
 {
   IconData icon = MdiIcons.cardsOutline,
   Color iconColor = Colors.white,
-  double multi = .67,
+  double multi = .7,
   double height = 60,
   double width = 60,
   bool hasSecond = false,
@@ -205,10 +225,10 @@ Widget lifepadButton(
   void voidOnPressed(){
     onPressed();
   }
-  return SizedBox(
-    height: height,
-    width: width,
+  return Container(
+    constraints: BoxConstraints(maxWidth: width,maxHeight: height,minWidth: 0,minHeight: 0),
     child: RawMaterialButton(
+      constraints: BoxConstraints(minWidth: 0,minHeight: 0),
       onPressed: voidOnPressed,
       child: LayoutBuilder(
         builder: (context,constraints){
@@ -229,7 +249,7 @@ Widget lifepadButtonOpacity(
       bool condition = true,
       IconData icon = MdiIcons.cardsOutline,
       Color iconColor = Colors.white,
-      double multi = .67,
+      double multi = .7,
       double height = 60,
       double width = 60,
       bool hasSecond = false,
@@ -254,10 +274,10 @@ Widget lifepadButtonOpacity(
     );
   }
 
-  return SizedBox(
-    height: height,
-    width: width,
+  return Container(
+    constraints: BoxConstraints(maxHeight: height,maxWidth: width,minWidth: 0,minHeight: 0),
     child: condition? RawMaterialButton(
+      constraints: BoxConstraints(minWidth: 0,minHeight: 0),
       onPressed: voidOnPressed,
       child: body(),
     ) : SizedBox(),
@@ -272,7 +292,7 @@ Widget lifepadButtonOpacityDouble(
       IconData initialIcon = MdiIcons.cardsOutline,
       IconData afterIcon = MdiIcons.cards,
       Color iconColor = Colors.white,
-      double multi = .67,
+      double multi = .7,
       double height = 60,
       double width = 60,
       bool hasSecond = false,
@@ -280,10 +300,10 @@ Widget lifepadButtonOpacityDouble(
   void voidOnPressed(){
     onPressed();
   }
-  return SizedBox(
-    height: 60,
-    width: 60,
+  return Container(
+    constraints: BoxConstraints(maxWidth: height,maxHeight: width,minWidth: 0,minHeight: 0),
     child: RawMaterialButton(
+      constraints: BoxConstraints(minWidth: 0,minHeight: 0),
       onPressed: voidOnPressed,
       child: LayoutBuilder(
         builder: (context,constraints){
@@ -320,7 +340,7 @@ Widget lifepadButtonOpacityDoubleChange(
       IconData initialIcon = MdiIcons.cardsOutline,
       IconData afterIcon = MdiIcons.cards,
       Color iconColor = Colors.white,
-      double multi = .67,
+      double multi = .7,
       double height = 60,
       double width = 60,
       bool hasSecond = false,
@@ -329,10 +349,10 @@ Widget lifepadButtonOpacityDoubleChange(
   void voidOnPressed(){
     onPressed();
   }
-  return SizedBox(
-    height: 60,
-    width: 60,
+  return Container(
+    constraints: BoxConstraints(maxWidth: height,maxHeight: width),
     child: RawMaterialButton(
+      constraints: BoxConstraints(minWidth: 0,minHeight: 0),
       onPressed: voidOnPressed,
       child: LayoutBuilder(
         builder: (context,constraints){
@@ -394,123 +414,196 @@ Widget highlightContainer({
   );
 }
 
+class PositionedButton extends StatelessWidget {
+  PositionedButton({
+    Key? key,
+    this.initialIcon = MdiIcons.cardsOutline,
+    this.afterIcon = MdiIcons.cards,
+    this.initialMode = "minimalist",
+    this.visibleCondition = true,
+    this.afterMode = "detailed",
+    // this.position = "topRight",
+    required this.onPressed,
+    this.condition = true,
+  }) : super(key: key);
+  bool visibleCondition;
+  IconData initialIcon;
+  Function onPressed;
+  IconData afterIcon;
+  String initialMode;
+  String afterMode;
+  // String position;
+  bool condition;
 
-Widget positionedButton(
-    Function onPressed, {
-      bool condition = true,
-      bool visibleCondition = true,
-      IconData initialIcon = MdiIcons.cardsOutline,
-      IconData afterIcon = MdiIcons.cards,
-      String position = "topRight",
-      String initialMode = "minimalist",
-      String afterMode = "detailed",
-    }
-){
-  Widget child = lifepadButtonOpacityDoubleChange(
-    onPressed,
-    initialIcon: initialIcon,
-    afterIcon: afterIcon,
-    condition: condition
-  );
+  @override
+  Widget build(BuildContext context) {
+    Widget child = lifepadButtonOpacityDoubleChange(
+        onPressed,
+        initialIcon: initialIcon,
+        afterIcon: afterIcon,
+        condition: condition
+    );
 
-  Widget childPositioned = position == "topRight"? Positioned(
-    right: 0, top: 0,
-    child: child,
-  ) :
-  position == "bottomRight"? Positioned(
-    right: 0, bottom: 0,
-    child: child,
-  ) :
-  position == "bottomLeft"? Positioned(
-    left: 0, bottom: 0,
-    child: child,
-  ) :
-  Positioned(
-    left: 0, top: 0,
-    child: child,
-  );
-  return Visibility(
-    visible: visibleCondition,
-    child: childPositioned,
-  );
+    return Visibility(
+      visible: visibleCondition,
+      child: child,
+    );
+  }
 }
 
-Widget lifepadSection(Function onClose, Function onRandom,List<Widget> children, {int crossAxisCount = 4,String title = "ROLL A DICE",bool visible = true,Color color = Colors.red}){
-  return Visibility(
-    visible: visible,
-    child: AnimatedContainer(
-      duration: Duration(milliseconds: 300),
-      width: double.infinity,
-      decoration: lifepadBoxDecoration(color),
-      child: Column(
-        children: [
-          Container(
-              height: 60,
-              width: double.infinity,
-              color: Colors.black26,
-              child: LayoutBuilder(
-                builder: (context,constraints){
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      lifepadButton(
-                        (){
-                          onClose();
-                        },
-                        icon: Icons.close,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 5),
-                          child: FittedBox(
-                            child: Text(
-                              title,
-                              style: boldTextStyle()
+class ButtonRow extends StatelessWidget {
+  ButtonRow({
+    Key? key,
+    this.mainAxisAlignment = MainAxisAlignment.end,
+    required this.leftButton,
+    required this.rightButton,
+  }) : super(key: key);
+  MainAxisAlignment mainAxisAlignment;
+  Widget rightButton;
+  Widget leftButton;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: mainAxisAlignment,
+      children: [
+        Row(
+          children: [
+            leftButton,
+            Expanded(child: SizedBox()),
+            rightButton,
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class LifepadSection extends StatelessWidget {
+  LifepadSection({
+    Key? key,
+    this.title = "ROLL A DICE",
+    this.crossAxisCount = 4,
+    this.color = Colors.red,
+    this.visible = false,
+    required this.onRandom,
+    required this.children,
+    required this.onClose,
+  }) : super(key: key);
+  List<Widget> children;
+  int crossAxisCount;
+  Function onRandom;
+  Function onClose;
+  bool visible;
+  String title;
+  Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: visible,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        width: double.infinity,
+        decoration: lifepadBoxDecoration(color),
+        child: Column(
+          children: [
+            Container(
+                constraints: BoxConstraints(
+                  maxHeight: 60,
+                  maxWidth: double.infinity,
+                ),
+                color: Colors.black26,
+                child: LayoutBuilder(
+                  builder: (context,constraints){
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        lifepadButton(
+                          (){
+                            onClose();
+                          },
+                          icon: Icons.close,
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 5),
+                            child: FittedBox(
+                              child: Text(
+                                title,
+                                style: boldTextStyle()
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      lifepadButton(
-                        (){
-                          onRandom();
-                        },
-                        icon: Icons.question_mark,
-                      ),
-                    ],
-                  );
-                },
-              )
-          ),
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: crossAxisCount,
-              children: children,
+                        lifepadButton(
+                          (){
+                            onRandom();
+                          },
+                          icon: Icons.question_mark,
+                        ),
+                      ],
+                    );
+                  },
+                )
             ),
-          )
-        ],
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: crossAxisCount,
+                children: children,
+              ),
+            )
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
-
-Map dicesMap = {
-  "normal":{
-    4:MdiIcons.diceD4,
-    6:MdiIcons.diceD6,
-    8:MdiIcons.diceD8,
-    10:MdiIcons.diceD10,
-    12:MdiIcons.diceD12,
-    20:MdiIcons.diceD20,
-  },
-  "outlined":{
-    4:MdiIcons.diceD4Outline,
-    6:MdiIcons.diceD6Outline,
-    8:MdiIcons.diceD8Outline,
-    10:MdiIcons.diceD10Outline,
-    12:MdiIcons.diceD12Outline,
-    20:MdiIcons.diceD20Outline,
+class ResponsiveIcon extends StatelessWidget {
+  const ResponsiveIcon({Key? key, required this.icon, this.multi = 1, this.color = Colors.white}) : super(key: key);
+  final Color color;
+  final double multi;
+  final IconData icon;
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Icon(
+            icon,
+            color: color,
+            size: constraints.biggest.shortestSide * multi
+        );
+      },
+    );
   }
-};
+}
 
-List dicesValues = [4,6,8,10,12,20];
+class CenterMenuIconButton extends StatelessWidget {
+  CenterMenuIconButton({Key? key, required this.icon, required this.onPressed,this.multi = 1, this.color = Colors.white, this.height = 2.5}) : super(key: key);
+  final Color color;
+  final double multi;
+  final IconData icon;
+  final double height;
+  final Function onPressed;
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: SizedBox(
+        width: double.infinity,
+        child: RawMaterialButton(
+          onPressed: (){
+            onPressed();
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: height),
+            child: ResponsiveIcon(
+              multi: multi,
+              color: color,
+              icon: icon,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
