@@ -1,3 +1,4 @@
+import 'package:lifekeeper/settings_button.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:lifekeeper/style.dart';
@@ -121,6 +122,38 @@ class _MainPageState extends State<MainPage> {
       ];
     }
 
+    Widget centerButton(){
+      return Container(
+          height: 55,
+          width: 55,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(100),
+            color: Colors.black38,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black,
+                blurRadius: 1.1
+              ),
+            ],
+          ),
+          child: GestureDetector(
+            onTap: (){
+              setState(() {
+                widget.numberOfPlayers++;
+                if(widget.numberOfPlayers > 6){
+                  widget.numberOfPlayers = 2;
+                }
+              });
+            },
+            child: LayoutBuilder(
+              builder: (context,constraints){
+                return Icon(MdiIcons.cubeOutline,color: Colors.white,size: constraints.maxWidth*0.7,);
+              },
+            )
+          )
+      );
+    }
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -137,6 +170,20 @@ class _MainPageState extends State<MainPage> {
               Row(
                 children: buildChildren(),
               ),
+              widget.numberOfPlayers % 4 == 0 || widget.numberOfPlayers < 5?
+                centerButton() : Column(
+                children: [
+                  Expanded(
+                    flex: 15,
+                    child: SizedBox(),
+                  ),
+                  centerButton(),
+                  Expanded(
+                    flex: 7,
+                    child: SizedBox(),
+                  )
+                ],
+              )
             ],
           )
         ),

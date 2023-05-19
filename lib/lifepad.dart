@@ -23,6 +23,7 @@ class _LifePadState extends State<LifePad> {
   Timer timeCounter = Timer(Duration(seconds: 0),(){});
   String viewMode = "minimalist";
   int diceTypeRoll = 0;
+  DateTime lastClick = DateTime.now();
 
   @override
   void initState(){
@@ -30,50 +31,56 @@ class _LifePadState extends State<LifePad> {
   }
 
   Widget counterValueText() {
-    return SizedBox(
-      child: RawMaterialButton(
-        onPressed: (){
-          changeViewMode(viewMode != "minimalist", "minimalist", "detailed");
-        },
-        child: LayoutBuilder(
-          builder: (context,constraints){
-            return AnimatedContainer(
-              duration: Duration(milliseconds: 100),
-              width: (constraints.maxWidth > constraints.maxHeight? constraints.maxWidth : constraints.maxHeight) * (0.35),
-              color: Colors.transparent,
-              child: FittedBox(
-                child: Text(
-                  widget.value.toString(),
-                  style: boldTextStyle(),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                ),
-              ),
-            );
-          }
-        ),
-      ),
+    return LayoutBuilder(
+      builder: (context,constraints){
+        return AnimatedContainer(
+          duration: Duration(milliseconds: 100),
+          width: (constraints.maxWidth > constraints.maxHeight? constraints.maxWidth : constraints.maxHeight) * (0.35),
+          color: Colors.transparent,
+          child: FittedBox(
+            child: Text(
+              widget.value.toString(),
+              style: boldTextStyle(),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+            ),
+          ),
+        );
+      }
     );
+  }
+  int delayCheck = 3;
+  void checkLastClick() {
+    if (DateTime.now().difference(lastClick).inSeconds >= delayCheck && viewMode == "detailed") {
+      print("CHECKED");
+      setState(() {
+        changeViewMode(viewMode!="minimalist", "minimalist", "detailed");
+      });
+    }
   }
 
   Widget counterModifierButton({int num = 1}){
     void onPressed(){
       setState(() {
         widget.value += num;
+        lastClick = DateTime.now();
+        Future.delayed(Duration(seconds: delayCheck), checkLastClick);
       });
     }
 
     void onLongPress(){
       timeCounter = Timer.periodic(
-          const Duration(milliseconds: 100),
-          (timer) {
-            onPressed();
-          }
+        const Duration(milliseconds: 100),
+        (timer) {
+          onPressed();
+          lastClick = DateTime.now();
+          Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+        }
       );
     }
 
     void onLongEnd(LongPressEndDetails details) {
-      timeCounter.cancel();
+      timeCounter?.cancel();
     }
 
     return Expanded(
@@ -99,6 +106,8 @@ class _LifePadState extends State<LifePad> {
   void changeViewMode(bool modeCondition,String isTrue, String isFalse){
     setState(() {
       viewMode = modeCondition? isTrue:isFalse;
+      lastClick = DateTime.now();
+      Future.delayed(Duration(seconds: delayCheck), checkLastClick);
     });
   }
 
@@ -195,6 +204,7 @@ class _LifePadState extends State<LifePad> {
           initialIcon: dicesMap["outlined"][value],
           afterIcon: dicesMap["normal"][value],
           condition: diceTypeRoll == value,
+          multi: 0.8
         )
       ),
     );
@@ -206,9 +216,30 @@ class _LifePadState extends State<LifePad> {
       children: viewMode == "minimalist"? [
         modifierColumn(),
         counterValueText(),
+        SizedBox(
+          height: 70,
+          width: 70,
+          child: GestureDetector(
+            onTap: (){
+              changeViewMode(viewMode != "minimalist", "minimalist", "detailed");
+            },
+          ),
+        )
       ] : [
         counterValueText(),
         modifierColumn(),
+      ],
+    );
+  }
+
+  Widget detailedStack(){
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        paletteOutlineButton(),
+        diceMultipleOutlineButton(),
+        cardsOutlinedButton(),
+        tokensButton(),
       ],
     );
   }
@@ -227,11 +258,7 @@ class _LifePadState extends State<LifePad> {
               alignment: Alignment.center,
               children: [
                 lifeStack(),
-                paletteOutlineButton(),
-                diceMultipleOutlineButton(),
-                cardsOutlinedButton(),
-                tokensButton(),
-
+                detailedStack(),
                 lifepadSection(
                   (){
                     changeViewMode(viewMode == "colorChange","detailed","colorChange");
@@ -244,6 +271,7 @@ class _LifePadState extends State<LifePad> {
                   List<Widget>.generate(colorsList.length, (index) => colorButton(color: colorsList[index])),
                   visible: viewMode == "colorChange",
                   color: widget.color,
+                  title: "CHOOSE A COLOR"
                 ),
 
                 lifepadSection(
@@ -261,6 +289,27 @@ class _LifePadState extends State<LifePad> {
                   title: "ROLL A DICE",
                   color: widget.color,
                   crossAxisCount: 4,
+                ),
+
+                lifepadSection(
+                      (){
+                    changeViewMode(viewMode == "tokensEdit", "detailed", "tokensEdit");
+                    diceTypeRoll = 0;
+                  },
+                      (){
+                    setState(() {
+                      diceTypeRoll = dicesValues[Random().nextInt(dicesValues.length)];
+                    });
+                  },
+                  [
+                    Container(color: Colors.red),
+                    Container(color: Colors.green),
+                    Container(color: Colors.blue),
+                  ],
+                  visible: viewMode == "tokensEdit",
+                  title: "ROLL A DICE",
+                  color: widget.color,
+                  crossAxisCount: 3,
                 ),
               ],
             ),

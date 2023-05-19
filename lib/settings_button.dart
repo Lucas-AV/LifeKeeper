@@ -17,8 +17,8 @@ class _SettingsButtonState extends State<SettingsButton> {
           color: Colors.black54,
           boxShadow: [
             BoxShadow(
-                color: Colors.black,
-                blurRadius: 1
+              color: Colors.black,
+              blurRadius: 1
             )
           ]
       ),

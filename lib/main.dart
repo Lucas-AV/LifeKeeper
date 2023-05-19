@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int numberOfPlayers = 5;
+    int numberOfPlayers = 2;
     int base = 40;
 
 
