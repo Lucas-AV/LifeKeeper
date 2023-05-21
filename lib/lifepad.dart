@@ -25,11 +25,12 @@ class _LifePadState extends State<LifePad> {
   String viewMode = "minimalist";
   int diceTypeRoll = 0;
   DateTime lastClick = DateTime.now();
-
   @override
   void initState(){
     super.initState();
   }
+
+  // widget.id == widget.playersInfo['starter']
 
   Widget counterValueText() {
     return LayoutBuilder(
@@ -37,7 +38,9 @@ class _LifePadState extends State<LifePad> {
         return AnimatedContainer(
           duration: Duration(milliseconds: 100),
           width: (constraints.maxWidth > constraints.maxHeight? constraints.maxWidth : constraints.maxHeight) * (0.35),
-          color: Colors.transparent,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+          ),
           child: FittedBox(
             child: Text(
               widget.playersInfo['life'][widget.id].toString(),
@@ -132,6 +135,7 @@ class _LifePadState extends State<LifePad> {
       initialIcon: MdiIcons.diceMultipleOutline,
       afterIcon: MdiIcons.diceMultiple,
       condition: viewMode == "rollDice",
+      multi: widget.numberOfPlayers == 6 || widget.numberOfPlayers == 5 && widget.id != widget.numberOfPlayers? .66:.7,
       // position: 'n',
     );
   }
@@ -144,6 +148,7 @@ class _LifePadState extends State<LifePad> {
       initialIcon: MdiIcons.paletteOutline,
       afterIcon: MdiIcons.palette,
       condition: viewMode == "colorChange",
+      multi: widget.numberOfPlayers == 6 || widget.numberOfPlayers == 5 && widget.id != widget.numberOfPlayers? .66:.7,
       // position: 'n',
     );
   }
@@ -156,6 +161,7 @@ class _LifePadState extends State<LifePad> {
       initialIcon: MdiIcons.cardsOutline,
       afterIcon: MdiIcons.cards,
       condition: viewMode == "commander",
+      multi: widget.numberOfPlayers == 6 || widget.numberOfPlayers == 5 && widget.id != widget.numberOfPlayers? .66:.7,
       // position: "topRight",
     );
   }
@@ -168,22 +174,27 @@ class _LifePadState extends State<LifePad> {
       initialIcon: MdiIcons.notebookEditOutline,
       afterIcon: MdiIcons.notebookEdit,
       condition: viewMode == "tokensEdit",
+      multi: widget.numberOfPlayers == 6 || widget.numberOfPlayers == 5 && widget.id != widget.numberOfPlayers? .66:.7,
       // position: 'topLeft',
     );
   }
   Widget buttonRow(Function left, Function right, {MainAxisAlignment mainAxisAlignment = MainAxisAlignment.end}){
     return Column(
-        mainAxisAlignment: mainAxisAlignment,
-        children: [
-          Row(
-            children: [
-              left(),
-              Expanded(child: SizedBox()),
-              right(),
-            ],
-          ),
-        ],
-      );
+      mainAxisAlignment: mainAxisAlignment,
+      children: [
+        Row(
+          children: [
+            left(),
+            Expanded(child: SizedBox()),
+            right(),
+          ],
+        ),
+        SizedBox(
+          height: 10,
+          width: 1,
+        )
+      ],
+    );
   }
 
   Widget colorButton({Color color = Colors.red}){

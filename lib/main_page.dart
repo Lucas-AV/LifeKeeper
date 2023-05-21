@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:lifekeeper/style.dart';
@@ -15,10 +17,11 @@ class CenterButton extends StatelessWidget {
 
 
 class MainPage extends StatefulWidget {
-  MainPage({Key? key, this.numberOfPlayers = 2, this.base = 40, this.passiveColors = const []}) : super(key: key);
+  MainPage({Key? key, this.numberOfPlayers = 2, this.base = 40, this.passiveColors = const [], required this.playersInfo}) : super(key: key);
   int numberOfPlayers;
   int base;
   List passiveColors;
+  final Map playersInfo;
   @override
   State<MainPage> createState() => _MainPageState();
 }
@@ -28,7 +31,7 @@ class _MainPageState extends State<MainPage> {
   bool centerButtonClicked = false;
   double maxSize = 80;
   List<Widget> children = [];
-  late Map playersInfo;
+
   int maxPlayers = 7;
   void changeViewMode(String newMode){
     setState(() {
@@ -40,18 +43,9 @@ class _MainPageState extends State<MainPage> {
   void initState(){
     super.initState();
      setState(() {
-
-       playersInfo = {
-         "colors":widget.passiveColors.isNotEmpty? widget.passiveColors : List.generate(maxPlayers+1, (index) => colorsList[index]),
-         "commander":List.generate(maxPlayers+1, (index) => List.generate(widget.numberOfPlayers, (subIndex) => 0)),
-         "initiative":List.generate(maxPlayers+1, (index) => false),
-         "life":List.generate(maxPlayers+1, (index) => widget.base),
-         "attacking":List.generate(maxPlayers+1, (index) => false),
-         "ascended":List.generate(maxPlayers+1, (index) => false),
-         "monarch":List.generate(maxPlayers+1, (index) => false),
-         "numberOfPlayers":widget.numberOfPlayers,
-         "base":widget.base,
-       };
+       // "colors":widget.passiveColors.isNotEmpty? widget.passiveColors : List.generate(maxPlayers+1, (index) => colorsList[index]);
+       // "diceValues":List.generate(maxPlayers+1, (index) => Random().nextInt(100));
+       widget.playersInfo['starter'] = Random().nextInt(widget.numberOfPlayers)+1;
      });
   }
 
@@ -72,10 +66,10 @@ class _MainPageState extends State<MainPage> {
                     LifePad(
                       quarterTurns: (maxHei <= maxWid)? (j == 0? 2:0):(j == 0? 3:1),
                       numberOfPlayers: widget.numberOfPlayers,
-                      color: playersInfo['colors'][j + i * 2 + 1-1],
+                      color: widget.playersInfo['colors'][j + i * 2 + 1-1],
                       id: j + i * 2 + 1,
                       base: widget.base,
-                      playersInfo: playersInfo,
+                      playersInfo: widget.playersInfo,
                     )
                 ],
               ) :
@@ -85,10 +79,10 @@ class _MainPageState extends State<MainPage> {
                     LifePad(
                       quarterTurns: (maxHei >= maxWid)? (j == 0? 1:3):(j == 0? 3:1),
                       numberOfPlayers: widget.numberOfPlayers,
-                      color: playersInfo['colors'][j + i * 2 + 1-1],
+                      color: widget.playersInfo['colors'][j + i * 2 + 1-1],
                       id: j + i * 2 + 1,
                       base: widget.base,
-                      playersInfo: playersInfo,
+                      playersInfo: widget.playersInfo,
                     )
                 ],
               ),
@@ -107,10 +101,10 @@ class _MainPageState extends State<MainPage> {
                     LifePad(
                       quarterTurns: (maxHei <= maxWid)? (j == 0? 2:0):(j == 0? 3:1),
                       numberOfPlayers: widget.numberOfPlayers,
-                      color: playersInfo['colors'][j + i * 2 + 1-1],
+                      color: widget.playersInfo['colors'][j + i * 2 + 1-1],
                       id: j + i * 2 + 1,
                       base: widget.base,
-                      playersInfo: playersInfo,
+                      playersInfo: widget.playersInfo,
                     )
                 ],
               ) :
@@ -120,10 +114,10 @@ class _MainPageState extends State<MainPage> {
                       LifePad(
                       quarterTurns: (maxHei >= maxWid)? (j == 0? 1:3):(j == 0? 3:1),
                       numberOfPlayers: widget.numberOfPlayers,
-                      color: playersInfo['colors'][j + i * 2 + 1-1],
+                      color: widget.playersInfo['colors'][j + i * 2 + 1-1],
                       id: j + i * 2 + 1,
                       base: widget.base,
-                      playersInfo: playersInfo,
+                      playersInfo: widget.playersInfo,
                       )
                   ],
                 ),
@@ -131,10 +125,10 @@ class _MainPageState extends State<MainPage> {
           LifePad(
             numberOfPlayers: widget.numberOfPlayers,
             quarterTurns: (maxHei >= maxWid)?0:3,
-            color: playersInfo['colors'][widget.numberOfPlayers-1],
+            color: widget.playersInfo['colors'][widget.numberOfPlayers-1],
             id: widget.numberOfPlayers,
             base: widget.base,
-            playersInfo: playersInfo,
+            playersInfo: widget.playersInfo,
           )
         ];
       }
@@ -144,16 +138,17 @@ class _MainPageState extends State<MainPage> {
           LifePad(
             numberOfPlayers: widget.numberOfPlayers,
             quarterTurns: (maxHei >= maxWid)? (i == 1? 2:0):(i == 1? 1:3),
-            color: playersInfo['colors'][i-1],
+            color: widget.playersInfo['colors'][i-1],
             id: i,
             base: widget.base,
-            playersInfo: playersInfo,
+            playersInfo: widget.playersInfo,
           )
       ];
     }
 
     void resetPage(){
       setState(() {
+        widget.playersInfo["diceValues"] = List.generate(maxPlayers+1, (index) => Random().nextInt(100));
         centerButtonClicked = false;
       });
       Navigator.pop(context);
@@ -163,7 +158,8 @@ class _MainPageState extends State<MainPage> {
           builder: (context) => MainPage(
             numberOfPlayers: widget.numberOfPlayers,
             base: widget.base,
-            passiveColors: playersInfo["colors"],
+            passiveColors: widget.playersInfo["colors"],
+            playersInfo: widget.playersInfo,
           )
         )
       );
@@ -329,7 +325,7 @@ class _MainPageState extends State<MainPage> {
             setState(() {
               widget.base = value;
               for(int index = 0; index < maxPlayers+1;index++){
-                playersInfo['life'][index] = value;
+                widget.playersInfo['life'][index] = value;
               }
             });
             lifeController.animateToItem(widget.base, duration: const Duration(milliseconds: 450), curve: Curves.easeIn);
@@ -599,42 +595,45 @@ class _MainPageState extends State<MainPage> {
                       ]
                   ),
                 ),
-                SizedBox(
-                  height: maxSize,
-                  width: maxSize,
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 450),
-                    opacity: menuViewMode == "life"? 1:0,
-                    child: Center(
-                      child: SizedBox(
-                        child: ListWheelScrollView.useDelegate(
-                          itemExtent: 28,
-                          diameterRatio: 1.5,
-                          perspective: 0.01,
-                          physics: const FixedExtentScrollPhysics(),
-                          controller: lifeController,
-                          childDelegate: ListWheelChildBuilderDelegate(
-                              childCount: 1000,
-                              builder: (context, index) {
-                                return Text(
-                                  "$index",
-                                  style: TextStyle(
-                                    color: Colors.black.withOpacity(0.5),
-                                    shadows: const [Shadow(color: Colors.black, blurRadius: 1)],
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 26
-                                  ),
-                                );
-                              }
+                Visibility(
+                  visible: menuViewMode == "life",
+                  child: SizedBox(
+                    height: maxSize,
+                    width: maxSize,
+                    child: AnimatedOpacity(
+                      duration: Duration(milliseconds: menuViewMode == "life"?450:100),
+                      opacity: menuViewMode == "life"? 1:0,
+                      child: Center(
+                        child: SizedBox(
+                          child: ListWheelScrollView.useDelegate(
+                            itemExtent: 28,
+                            diameterRatio: 1.5,
+                            perspective: 0.01,
+                            physics: const FixedExtentScrollPhysics(),
+                            controller: lifeController,
+                            childDelegate: ListWheelChildBuilderDelegate(
+                                childCount: 1000,
+                                builder: (context, index) {
+                                  return Text(
+                                    "$index",
+                                    style: TextStyle(
+                                      color: Colors.black.withOpacity(0.5),
+                                      shadows: const [Shadow(color: Colors.black, blurRadius: 1)],
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 26
+                                    ),
+                                  );
+                                }
+                            ),
+                            onSelectedItemChanged: (value) {
+                              setState(() {
+                                widget.base = value;
+                                for(int index = 0; index < maxPlayers+1;index++){
+                                  widget.playersInfo['life'][index] = value;
+                                }
+                              });
+                            },
                           ),
-                          onSelectedItemChanged: (value) {
-                            setState(() {
-                              widget.base = value;
-                              for(int index = 0; index < maxPlayers+1;index++){
-                                playersInfo['life'][index] = value;
-                              }
-                            });
-                          },
                         ),
                       ),
                     ),

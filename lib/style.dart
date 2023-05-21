@@ -425,6 +425,7 @@ class PositionedButton extends StatelessWidget {
     // this.position = "topRight",
     required this.onPressed,
     this.condition = true,
+    this.multi = .7,
   }) : super(key: key);
   bool visibleCondition;
   IconData initialIcon;
@@ -434,6 +435,7 @@ class PositionedButton extends StatelessWidget {
   String afterMode;
   // String position;
   bool condition;
+  double multi;
 
   @override
   Widget build(BuildContext context) {
@@ -441,7 +443,8 @@ class PositionedButton extends StatelessWidget {
         onPressed,
         initialIcon: initialIcon,
         afterIcon: afterIcon,
-        condition: condition
+        condition: condition,
+      multi: multi
     );
 
     return Visibility(
