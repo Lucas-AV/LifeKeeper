@@ -17,10 +17,12 @@ class CenterButton extends StatelessWidget {
 
 
 class MainPage extends StatefulWidget {
-  MainPage({Key? key, this.numberOfPlayers = 2, this.base = 40, this.passiveColors = const [], required this.playersInfo}) : super(key: key);
+  MainPage({Key? key, this.diceValue = 20,this.isPlaying = true, this.numberOfPlayers = 2, this.base = 40, this.passiveColors = const [], required this.playersInfo}) : super(key: key);
   int numberOfPlayers;
   int base;
+  int diceValue;
   List passiveColors;
+  bool isPlaying;
   final Map playersInfo;
   @override
   State<MainPage> createState() => _MainPageState();
@@ -39,14 +41,37 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+
+  late int last;
+  Future<void> rollDicePlus(int idx,int max) async {
+    for(int i = 0; i < 50; i++){
+      if(i != 0){
+        await Future.delayed(const Duration(milliseconds: 5));
+      }
+      setState((){
+        last = widget.playersInfo["diceValues"][idx];
+        while(widget.playersInfo["diceValues"][idx] == last){
+          widget.playersInfo["diceValues"][idx] = Random().nextInt(max) + 1;
+        }
+      });
+    }
+    setState(() {
+      widget.playersInfo["rolling"][idx] = true;
+    });
+  }
+
   @override
   void initState(){
     super.initState();
      setState(() {
-       // "colors":widget.passiveColors.isNotEmpty? widget.passiveColors : List.generate(maxPlayers+1, (index) => colorsList[index]);
-       // "diceValues":List.generate(maxPlayers+1, (index) => Random().nextInt(100));
        widget.playersInfo['starter'] = Random().nextInt(widget.numberOfPlayers)+1;
-     });
+       if(!widget.isPlaying) {
+         widget.playersInfo['rolling'] = List.generate(maxPlayers+1, (index) => false);
+         for (int i = 0; i < 8; i++) {
+           rollDicePlus(i, widget.diceValue);
+         }
+      }
+    });
   }
 
   @override
@@ -70,6 +95,7 @@ class _MainPageState extends State<MainPage> {
                       id: j + i * 2 + 1,
                       base: widget.base,
                       playersInfo: widget.playersInfo,
+                      isPlaying: widget.isPlaying,
                     )
                 ],
               ) :
@@ -83,6 +109,7 @@ class _MainPageState extends State<MainPage> {
                       id: j + i * 2 + 1,
                       base: widget.base,
                       playersInfo: widget.playersInfo,
+                      isPlaying: widget.isPlaying,
                     )
                 ],
               ),
@@ -105,6 +132,7 @@ class _MainPageState extends State<MainPage> {
                       id: j + i * 2 + 1,
                       base: widget.base,
                       playersInfo: widget.playersInfo,
+                      isPlaying: widget.isPlaying,
                     )
                 ],
               ) :
@@ -112,12 +140,13 @@ class _MainPageState extends State<MainPage> {
                   children: [
                     for(int j = 0; j < 2; j++)
                       LifePad(
-                      quarterTurns: (maxHei >= maxWid)? (j == 0? 1:3):(j == 0? 3:1),
-                      numberOfPlayers: widget.numberOfPlayers,
-                      color: widget.playersInfo['colors'][j + i * 2 + 1-1],
-                      id: j + i * 2 + 1,
-                      base: widget.base,
-                      playersInfo: widget.playersInfo,
+                        quarterTurns: (maxHei >= maxWid)? (j == 0? 1:3):(j == 0? 3:1),
+                        numberOfPlayers: widget.numberOfPlayers,
+                        color: widget.playersInfo['colors'][j + i * 2 + 1-1],
+                        id: j + i * 2 + 1,
+                        base: widget.base,
+                        playersInfo: widget.playersInfo,
+                        isPlaying: widget.isPlaying,
                       )
                   ],
                 ),
@@ -129,6 +158,7 @@ class _MainPageState extends State<MainPage> {
             id: widget.numberOfPlayers,
             base: widget.base,
             playersInfo: widget.playersInfo,
+            isPlaying: widget.isPlaying,
           )
         ];
       }
@@ -142,15 +172,18 @@ class _MainPageState extends State<MainPage> {
             id: i,
             base: widget.base,
             playersInfo: widget.playersInfo,
+            isPlaying: widget.isPlaying,
           )
       ];
     }
 
     void resetPage(){
       setState(() {
-        widget.playersInfo["diceValues"] = List.generate(maxPlayers+1, (index) => Random().nextInt(100));
+        widget.playersInfo["diceValues"] = List.generate(maxPlayers+1, (index) => 0);
         centerButtonClicked = false;
+        widget.isPlaying = true;
       });
+
       Navigator.pop(context);
       Navigator.push(
         context,
@@ -312,7 +345,21 @@ class _MainPageState extends State<MainPage> {
     Expanded chooseDiceToRoll(int value) {
       return Expanded(
         child: RawMaterialButton(
-          onPressed: (){},
+          onPressed: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MainPage(
+                  numberOfPlayers: widget.numberOfPlayers,
+                  base: widget.base,
+                  passiveColors: widget.playersInfo["colors"],
+                  playersInfo: widget.playersInfo,
+                  isPlaying: false,
+                  diceValue: value,
+                )
+              )
+            );
+          },
           child: ResponsiveIcon(icon: dicesMap["normal"]![value],color: Colors.black),
         )
       );
@@ -710,7 +757,8 @@ class _MainPageState extends State<MainPage> {
               Row(
                 children: buildChildren(),
               ),
-              Visibility(
+              widget.isPlaying?
+                Visibility(
                 visible: centerButtonClicked,
                 child: GestureDetector(
                   onTap: (){
@@ -726,35 +774,46 @@ class _MainPageState extends State<MainPage> {
                     color: Colors.black54,
                   ),
                 ),
-              ),
-              widget.numberOfPlayers % 4 == 0 || widget.numberOfPlayers < 5? centerButton() :
-              (maxHei >= maxWid)?
-              Column(
-                children: [
-                  Expanded(
-                    flex: 13,
-                    child: SizedBox(),
-                  ),
-                  centerButton(),
-                  Expanded(
-                    flex: 6,
-                    child: SizedBox(),
-                  )
-                ],
               ) :
-              Row(
-                children: [
-                  Expanded(
-                    flex: 13,
-                    child: SizedBox(),
+                RawMaterialButton(
+                  onPressed: (){
+                    Navigator.pop(context);
+                  },
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
                   ),
-                  centerButton(),
-                  Expanded(
-                    flex: 6,
-                    child: SizedBox(),
-                  )
-                ],
-              )
+                ),
+
+              if(widget.isPlaying)
+                widget.numberOfPlayers % 4 == 0 || widget.numberOfPlayers < 5? centerButton() :
+                (maxHei >= maxWid)?
+                Column(
+                  children: [
+                    Expanded(
+                      flex: 13,
+                      child: SizedBox(),
+                    ),
+                    centerButton(),
+                    Expanded(
+                      flex: 6,
+                      child: SizedBox(),
+                    )
+                  ],
+                ) :
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 13,
+                      child: SizedBox(),
+                    ),
+                    centerButton(),
+                    Expanded(
+                      flex: 6,
+                      child: SizedBox(),
+                    )
+                  ],
+                )
             ],
           )
         ),

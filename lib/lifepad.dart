@@ -7,7 +7,7 @@ import 'main.dart';
 import 'dart:math';
 
 class LifePad extends StatefulWidget {
-  LifePad({Key? key, this.isAttacking = false, required this.color,this.quarterTurns = 0, this.base = 40, required this.id, required this.numberOfPlayers, required this.playersInfo}) : super(key: key);
+  LifePad({Key? key, this.rollDiceType = 20,this.isPlaying = true,this.isAttacking = false, required this.color,this.quarterTurns = 0, this.base = 40, required this.id, required this.numberOfPlayers, required this.playersInfo}) : super(key: key);
   final int numberOfPlayers;
   final int quarterTurns;
   Color color;
@@ -15,6 +15,8 @@ class LifePad extends StatefulWidget {
   bool isAttacking;
   final int base;
   final int id;
+  bool isPlaying;
+  int rollDiceType;
   @override
   State<LifePad> createState() => _LifePadState();
 }
@@ -25,9 +27,43 @@ class _LifePadState extends State<LifePad> {
   String viewMode = "minimalist";
   int diceTypeRoll = 0;
   DateTime lastClick = DateTime.now();
+  bool isFirst = false;
+  bool everyTrue(){
+    for(int i = 0; i < 8; i++){
+      if(!widget.playersInfo['rolling'][i]){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool rollWinner(){
+    List rollValues = widget.playersInfo['diceValues'].sublist(1,widget.numberOfPlayers+1);
+    rollValues.sort();
+    for(int i = 0; i < 8; i++){
+      if(widget.playersInfo['diceValues'][widget.id] != rollValues.last){
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void start()async{
+    await Future.delayed(Duration(milliseconds: 100));
+    setState(() {
+      isFirst = widget.id == widget.playersInfo['starter'];
+    });
+    Future.delayed(Duration(seconds: 2),(){
+      setState(() {
+        isFirst = false;
+      });
+    });
+  }
+
   @override
   void initState(){
     super.initState();
+    start();
   }
 
   // widget.id == widget.playersInfo['starter']
@@ -38,12 +74,10 @@ class _LifePadState extends State<LifePad> {
         return AnimatedContainer(
           duration: Duration(milliseconds: 100),
           width: (constraints.maxWidth > constraints.maxHeight? constraints.maxWidth : constraints.maxHeight) * (0.35),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-          ),
           child: FittedBox(
             child: Text(
-              widget.playersInfo['life'][widget.id].toString(),
+              widget.isPlaying? widget.playersInfo['life'][widget.id].toString() :
+              '${widget.playersInfo['diceValues'][widget.id] < 10?0:''}${widget.playersInfo['diceValues'][widget.id]}',
               style: boldTextStyle(),
               textAlign: TextAlign.center,
               maxLines: 1,
@@ -53,10 +87,10 @@ class _LifePadState extends State<LifePad> {
       }
     );
   }
+
   int delayCheck = 3;
   void checkLastClick() {
     if (DateTime.now().difference(lastClick).inSeconds >= delayCheck && viewMode == "detailed") {
-      print("CHECKED");
       setState(() {
         changeViewMode(viewMode!="minimalist", "minimalist", "detailed");
       });
@@ -241,17 +275,25 @@ class _LifePadState extends State<LifePad> {
     return Stack(
       alignment: Alignment.center,
       children: viewMode == "minimalist"? [
+        Positioned(
+          bottom: 10,
+          child: AnimatedOpacity(
+            duration: Duration(milliseconds: 750),
+            opacity: isFirst? 1:0,
+            child: Text("FIRST PLAYER",style: boldTextStyle())
+          ),
+        ),
         modifierColumn(),
         counterValueText(),
         SizedBox(
-          height: 70,
-          width: 70,
+          height: 90,
+          width: 90,
           child: GestureDetector(
             onTap: (){
               changeViewMode(viewMode != "minimalist", "minimalist", "detailed");
             },
           ),
-        )
+        ),
       ] : [
         counterValueText(),
         modifierColumn(),
@@ -259,11 +301,119 @@ class _LifePadState extends State<LifePad> {
     );
   }
 
+  Widget playerMode(){
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        lifeStack(),
+        ButtonRow(
+          leftButton: tokensButton(),
+          rightButton: cardsOutlinedButton(),
+          mainAxisAlignment: MainAxisAlignment.start,
+        ),
+        ButtonRow(
+          leftButton: paletteOutlineButton(),
+          rightButton: diceMultipleOutlineButton(),
+          mainAxisAlignment: MainAxisAlignment.end,
+        ),
+        LifepadSection(
+          onClose: (){
+            changeViewMode(viewMode == "colorChange","detailed","colorChange");
+          },
+          onRandom: (){
+            setState(() {
+              widget.color = colorsList[Random().nextInt(colorsList.length)];
+            });
+          },
+          visible: viewMode == "colorChange",
+          color: widget.color,
+          title: "CHOOSE A COLOR",
+          children: List<Widget>.generate(colorsList.length, (index) => colorButton(color: colorsList[index])),
+        ),
+        LifepadSection(
+          onClose: (){
+            changeViewMode(viewMode == "rollDice", "detailed", "rollDice");
+            diceTypeRoll = 0;
+          },
+          onRandom: (){
+            setState(() {
+              diceTypeRoll = dicesValues[Random().nextInt(dicesValues.length)];
+            });
+          },
+          visible: viewMode == "rollDice",
+          title: "ROLL A DICE",
+          color: widget.color,
+          crossAxisCount: 4,
+          children: List.generate(dicesValues.length, (index) => diceButton(value: dicesValues[index])),
+        ),
+        LifepadSection(
+          onClose: (){
+            changeViewMode(viewMode == "tokensEdit", "detailed", "tokensEdit");
+            diceTypeRoll = 0;
+          },
+          onRandom: (){
+            setState(() {
+              diceTypeRoll = dicesValues[Random().nextInt(dicesValues.length)];
+            });
+          },
+          visible: viewMode == "tokensEdit",
+          color: widget.color,
+          crossAxisCount: 3,
+          title: "COUNTERS",
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                color: Colors.transparent,
+                // decoration: BoxDecoration(
+                //   color: widget.color,
+                //   boxShadow:[
+                //     BoxShadow(
+                //       color: Colors.black26,
+                //       blurRadius: 10,
+                //       offset: Offset(0,11),
+                //     )
+                //   ]
+                // ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            child: RawMaterialButton(
+                              onPressed: (){},
+                              child: SizedBox(
+                                height: double.infinity,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: SizedBox(
+                            child: RawMaterialButton(
+                              onPressed: (){},
+                              child: SizedBox(
+                                height: double.infinity,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    double maxHei = MediaQuery.of(context).size.height;
-    double maxWid = MediaQuery.of(context).size.width;
     return Expanded(
       child: RotatedBox(
         quarterTurns: widget.quarterTurns,
@@ -275,7 +425,17 @@ class _LifePadState extends State<LifePad> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                lifeStack(),
+                widget.isPlaying?lifeStack():counterValueText(),
+                if(!widget.isPlaying)
+                  Positioned(
+                    bottom: 10,
+                    child: AnimatedOpacity(
+                      duration: Duration(milliseconds: 300),
+                      opacity: everyTrue() && rollWinner()? 1:0,
+                      child: Text("WINNER!",style: boldTextStyle())
+                    )
+                  ),
+
                 ButtonRow(
                   leftButton: tokensButton(),
                   rightButton: cardsOutlinedButton(),

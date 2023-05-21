@@ -32,7 +32,8 @@ class MyApp extends StatelessWidget {
       "attacking":List.generate(maxPlayers, (index) => false),
       "ascended":List.generate(maxPlayers, (index) => false),
       "monarch":List.generate(maxPlayers, (index) => false),
-      "diceValues":List.generate(maxPlayers, (index) => Random().nextInt(100)),
+      "rolling":List.generate(maxPlayers, (index) => false),
+      "diceValues":List.generate(maxPlayers, (index) => 0),
       "starter":Random().nextInt(numberOfPlayers)+1,
       "numberOfPlayers":maxPlayers,
       "base":base,
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         numberOfPlayers: numberOfPlayers,
         playersInfo: playersInfo,
         base: base,
+        isPlaying: true,
       ),
     );
   }
