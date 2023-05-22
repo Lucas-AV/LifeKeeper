@@ -28,6 +28,11 @@ class _LifePadState extends State<LifePad> {
   int diceTypeRoll = 0;
   DateTime lastClick = DateTime.now();
   bool isFirst = false;
+  bool soloRolling = false;
+  bool isDead = false;
+
+  // MdiIcons.skullOutlined
+
   bool everyTrue(){
     for(int i = 0; i < 8; i++){
       if(!widget.playersInfo['rolling'][i]){
@@ -68,7 +73,6 @@ class _LifePadState extends State<LifePad> {
     }
   }
 
-  // widget.id == widget.playersInfo['starter']
 
   Widget counterValueText() {
     return LayoutBuilder(
@@ -99,10 +103,14 @@ class _LifePadState extends State<LifePad> {
     }
   }
 
-  Widget counterModifierButton({int num = 1}){
+  Widget counterModifierButton({int num = 1, int idx = 0, String mode = ''}){
     void onPressed(){
       setState(() {
-        widget.playersInfo['life'][widget.id] += num;
+        if(mode == "commander"){
+          widget.playersInfo['commander'][widget.id][idx] += num;
+        } else {
+          widget.playersInfo['life'][widget.id] += num;
+        }
         lastClick = DateTime.now();
         Future.delayed(Duration(seconds: delayCheck), checkLastClick);
       });
@@ -112,7 +120,7 @@ class _LifePadState extends State<LifePad> {
       if(num == 1){
         timeCounterAdd = Timer.periodic(
             const Duration(milliseconds: 100),
-                (timer) {
+            (timer) {
               onPressed();
               lastClick = DateTime.now();
               Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -145,6 +153,7 @@ class _LifePadState extends State<LifePad> {
       ),
     );
   }
+
   Widget modifierColumn(){
     return Row(
       children: [
@@ -189,16 +198,21 @@ class _LifePadState extends State<LifePad> {
     );
   }
   Widget cardsOutlinedButton(){
-    return PositionedButton(
-      onPressed: (){
-        changeViewMode(viewMode == "commander","detailed","commander");
-      },
-      visibleCondition: viewMode != "minimalist",
-      initialIcon: MdiIcons.cardsOutline,
-      afterIcon: MdiIcons.cards,
-      condition: viewMode == "commander",
-      multi: widget.numberOfPlayers == 6 || widget.numberOfPlayers == 5 && widget.id != widget.numberOfPlayers? .66:.7,
-      // position: "topRight",
+    return Visibility(
+      visible: viewMode == "detailed",
+      child: Padding(
+        padding: const EdgeInsets.only(right: 2,top: 2),
+        child: RawMaterialButton(
+          constraints: BoxConstraints(maxWidth: 45,maxHeight: 45,minWidth: 45,minHeight: 45),
+          onPressed: (){
+            changeViewMode(viewMode == "commander","detailed","commander");
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(2),
+            child: Image.asset("assets/commander.png",color: Colors.white,),
+          ),
+        ),
+      ),
     );
   }
   Widget tokensButton(){
@@ -253,6 +267,80 @@ class _LifePadState extends State<LifePad> {
     );
   }
 
+  late int last;
+  Future<void> rollDicePlus(int idx,int max) async {
+    for(int i = 0; i < 50; i++){
+      if(i != 0){
+        await Future.delayed(const Duration(milliseconds: 5));
+      }
+      setState((){
+        last = widget.playersInfo["diceValues"][idx];
+        while(widget.playersInfo["diceValues"][idx] == last){
+          widget.playersInfo["diceValues"][idx] = Random().nextInt(max) + 1;
+        }
+      });
+    }
+    setState(() {
+      widget.playersInfo["rolling"][idx] = true;
+    });
+  }
+
+  Widget commanderButton({int idx = 0}){
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: widget.playersInfo['colors'][idx-1],
+          boxShadow: [
+            BoxShadow(
+              offset: Offset(0, 5),
+              color: Colors.black38,
+              blurRadius: 5
+            )
+          ]
+        ),
+        child: Stack(
+          children: [
+            SizedBox(
+              height: double.infinity,
+              width: double.infinity,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: SizedBox(
+                        child: FittedBox(child: Text(widget.playersInfo['commander'][widget.id][idx].toString(),style: boldTextStyle()))
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 1),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 18,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: FittedBox(
+                          child: Text("Player $idx",style: boldTextStyle()),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Row(
+              children: [
+                counterModifierButton(num: -1,idx: idx,mode: "commander"),
+                counterModifierButton(num: 1,idx: idx,mode: "commander"),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget diceButton({int value = 4}){
     return Padding(
@@ -261,7 +349,11 @@ class _LifePadState extends State<LifePad> {
         child: lifepadButtonOpacityDoubleChange(
           (){
             setState(() {
+              widget.isPlaying = false;
+              soloRolling = true;
               diceTypeRoll = value;
+              viewMode = "minimalist";
+              rollDicePlus(widget.id, value);
             });
           },
           initialIcon: dicesMap["outlined"][value],
@@ -303,117 +395,6 @@ class _LifePadState extends State<LifePad> {
     );
   }
 
-  Widget playerMode(){
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        lifeStack(),
-        ButtonRow(
-          leftButton: tokensButton(),
-          rightButton: cardsOutlinedButton(),
-          mainAxisAlignment: MainAxisAlignment.start,
-        ),
-        ButtonRow(
-          leftButton: paletteOutlineButton(),
-          rightButton: diceMultipleOutlineButton(),
-          mainAxisAlignment: MainAxisAlignment.end,
-        ),
-        LifepadSection(
-          onClose: (){
-            changeViewMode(viewMode == "colorChange","detailed","colorChange");
-          },
-          onRandom: (){
-            setState(() {
-              widget.color = colorsList[Random().nextInt(colorsList.length)];
-            });
-          },
-          visible: viewMode == "colorChange",
-          color: widget.color,
-          title: "CHOOSE A COLOR",
-          children: List<Widget>.generate(colorsList.length, (index) => colorButton(color: colorsList[index])),
-        ),
-        LifepadSection(
-          onClose: (){
-            changeViewMode(viewMode == "rollDice", "detailed", "rollDice");
-            diceTypeRoll = 0;
-          },
-          onRandom: (){
-            setState(() {
-              diceTypeRoll = dicesValues[Random().nextInt(dicesValues.length)];
-            });
-          },
-          visible: viewMode == "rollDice",
-          title: "ROLL A DICE",
-          color: widget.color,
-          crossAxisCount: 4,
-          children: List.generate(dicesValues.length, (index) => diceButton(value: dicesValues[index])),
-        ),
-        LifepadSection(
-          onClose: (){
-            changeViewMode(viewMode == "tokensEdit", "detailed", "tokensEdit");
-            diceTypeRoll = 0;
-          },
-          onRandom: (){
-            setState(() {
-              diceTypeRoll = dicesValues[Random().nextInt(dicesValues.length)];
-            });
-          },
-          visible: viewMode == "tokensEdit",
-          color: widget.color,
-          crossAxisCount: 3,
-          title: "COUNTERS",
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                color: Colors.transparent,
-                // decoration: BoxDecoration(
-                //   color: widget.color,
-                //   boxShadow:[
-                //     BoxShadow(
-                //       color: Colors.black26,
-                //       blurRadius: 10,
-                //       offset: Offset(0,11),
-                //     )
-                //   ]
-                // ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: SizedBox(
-                            child: RawMaterialButton(
-                              onPressed: (){},
-                              child: SizedBox(
-                                height: double.infinity,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: SizedBox(
-                            child: RawMaterialButton(
-                              onPressed: (){},
-                              child: SizedBox(
-                                height: double.infinity,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -428,14 +409,31 @@ class _LifePadState extends State<LifePad> {
               alignment: Alignment.center,
               children: [
                 widget.isPlaying?lifeStack():counterValueText(),
+
                 if(!widget.isPlaying)
                   Positioned(
                     bottom: 10,
                     child: AnimatedOpacity(
                       duration: Duration(milliseconds: 300),
-                      opacity: everyTrue() && rollWinner()? 1:0,
-                      child: Text("WINNER!",style: boldTextStyle())
+                      opacity: everyTrue() && rollWinner() || soloRolling? 1:0,
+                      child: Text(soloRolling? "ROLLING A D$diceTypeRoll":"WINNER!",style: boldTextStyle())
                     )
+                  ),
+
+                if(soloRolling)
+                  GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        widget.playersInfo["diceValues"][widget.id] = 0;
+                        widget.isPlaying = true;
+                        soloRolling = false;
+                      });
+                    },
+                    child: Container(
+                      height: double.infinity,
+                      width: double.infinity,
+                      color: Colors.transparent,
+                    ),
                   ),
 
                 ButtonRow(
@@ -497,16 +495,6 @@ class _LifePadState extends State<LifePad> {
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         color: Colors.transparent,
-                        // decoration: BoxDecoration(
-                        //   color: widget.color,
-                        //   boxShadow:[
-                        //     BoxShadow(
-                        //       color: Colors.black26,
-                        //       blurRadius: 10,
-                        //       offset: Offset(0,11),
-                        //     )
-                        //   ]
-                        // ),
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
@@ -539,6 +527,18 @@ class _LifePadState extends State<LifePad> {
                       ),
                     ),
                   ],
+                ),
+                // commander
+                LifepadSection(
+                  onClose: (){
+                    changeViewMode(viewMode == "commander", "detailed", "commander");
+                  },
+                  onRandom: (){},
+                  visible: viewMode == "commander",
+                  title: "COMMANDER",
+                  color: widget.color,
+                  crossAxisCount: 3,
+                  children: List.generate(widget.numberOfPlayers, (index) => commanderButton(idx: index+1)),
                 ),
               ],
             ),

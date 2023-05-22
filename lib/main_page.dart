@@ -183,6 +183,7 @@ class _MainPageState extends State<MainPage> {
     void resetPage(){
       setState(() {
         widget.playersInfo["diceValues"] = List.generate(maxPlayers+1, (index) => 0);
+        widget.playersInfo["commander"] = List.generate(maxPlayers+1, (index) => List.generate(maxPlayers+1, (subIndex) => 0));
         centerButtonClicked = false;
         widget.isPlaying = true;
       });
