@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
       "starter":Random().nextInt(numberOfPlayers)+1,
       "numberOfPlayers":maxPlayers,
       "base":base,
+      "playing":true,
     };
 
     return MaterialApp(

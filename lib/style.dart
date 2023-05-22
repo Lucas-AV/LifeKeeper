@@ -2,6 +2,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:flutter/material.dart';
 import 'lifepad.dart';
 
+bool play = true;
+
 Map dicesMap = {
   "normal":{
     4:MdiIcons.diceD4,

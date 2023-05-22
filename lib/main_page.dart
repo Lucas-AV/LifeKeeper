@@ -63,15 +63,18 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState(){
     super.initState();
-     setState(() {
-       widget.playersInfo['starter'] = Random().nextInt(widget.numberOfPlayers)+1;
-       if(!widget.isPlaying) {
-         widget.playersInfo['rolling'] = List.generate(maxPlayers+1, (index) => false);
-         for (int i = 0; i < 8; i++) {
-           rollDicePlus(i, widget.diceValue);
-         }
-      }
-    });
+    if(!widget.isPlaying) {
+      setState(() {
+        widget.playersInfo['rolling'] = List.generate(maxPlayers+1, (index) => false);
+        for (int i = 0; i < 8; i++) {
+          rollDicePlus(i, widget.diceValue);
+        }
+      });
+    } else {
+      setState(() {
+        widget.playersInfo['starter'] = Random().nextInt(widget.numberOfPlayers)+1;
+      });
+    }
   }
 
   @override
@@ -346,6 +349,9 @@ class _MainPageState extends State<MainPage> {
       return Expanded(
         child: RawMaterialButton(
           onPressed: (){
+            setState(() {
+              play = false;
+            });
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -357,8 +363,17 @@ class _MainPageState extends State<MainPage> {
                   isPlaying: false,
                   diceValue: value,
                 )
-              )
+              ),
             );
+            // Future.delayed(Duration(seconds: 5),(){
+            //   if(!play){
+            //     Navigator.pop(context);
+            //   }
+            // }).then((value){
+            //   setState(() {
+            //     play = true;
+            //   });
+            // });
           },
           child: ResponsiveIcon(icon: dicesMap["normal"]![value],color: Colors.black),
         )
@@ -777,6 +792,9 @@ class _MainPageState extends State<MainPage> {
               ) :
                 RawMaterialButton(
                   onPressed: (){
+                    setState(() {
+                      play = true;
+                    });
                     Navigator.pop(context);
                   },
                   child: SizedBox(

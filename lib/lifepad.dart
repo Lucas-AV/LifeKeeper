@@ -48,7 +48,7 @@ class _LifePadState extends State<LifePad> {
     return true;
   }
 
-  void start()async{
+  void start() async {
     await Future.delayed(Duration(milliseconds: 100));
     setState(() {
       isFirst = widget.id == widget.playersInfo['starter'];
@@ -63,7 +63,9 @@ class _LifePadState extends State<LifePad> {
   @override
   void initState(){
     super.initState();
-    start();
+    if(widget.isPlaying){
+      start();
+    }
   }
 
   // widget.id == widget.playersInfo['starter']
