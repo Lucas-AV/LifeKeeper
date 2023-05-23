@@ -32,21 +32,22 @@ List<Color> colorsList = [
   const Color(0xff1E8449),
   const Color(0xff355691),
   const Color(0xff101214),
+
   Colors.deepOrange,
   Colors.pink,
-  Colors.teal,
-  const Color(0xff429AB7),
-  Colors.redAccent,
-
-  Colors.blueGrey,
-  const Color(0xff14453D),
-  Colors.black,
-
-  const Color(0xff990099),
-  const Color(0xff484743),
-  const Color(0xff0B3948),
+  Color.fromRGBO(110,142,36,1),
   Colors.deepPurple,
-  // Colors.white,
+
+  const Color(0xff14453D),
+  Color.fromRGBO(146,73,39,1),
+  const Color(0xff484743),
+  Colors.teal,
+
+  Colors.pinkAccent,
+  Color.fromRGBO(4,85,40,1),
+  Colors.redAccent,
+  Color.fromRGBO(15,14,58,1),
+
 ];
 
 Map<String, Color> colorMap = {
@@ -426,7 +427,7 @@ class PositionedButton extends StatelessWidget {
     this.initialMode = "minimalist",
     this.visibleCondition = true,
     this.afterMode = "detailed",
-    // this.position = "topRight",
+    this.color = Colors.white,
     required this.onPressed,
     this.condition = true,
     this.multi = .7,
@@ -440,14 +441,16 @@ class PositionedButton extends StatelessWidget {
   // String position;
   bool condition;
   double multi;
+  Color color;
 
   @override
   Widget build(BuildContext context) {
     Widget child = lifepadButtonOpacityDoubleChange(
-        onPressed,
-        initialIcon: initialIcon,
-        afterIcon: afterIcon,
-        condition: condition,
+      onPressed,
+      initialIcon: initialIcon,
+      afterIcon: afterIcon,
+      condition: condition,
+      iconColor: color,
       multi: multi
     );
 

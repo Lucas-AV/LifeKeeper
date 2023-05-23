@@ -86,7 +86,7 @@ class _LifePadState extends State<LifePad> {
             child: Text(
               widget.isPlaying? widget.playersInfo['life'][widget.id].toString() :
               '${widget.playersInfo['diceValues'][widget.id] < 10?0:''}${widget.playersInfo['diceValues'][widget.id]}',
-              style: boldTextStyle(),
+              style: boldTextStyle(color: widget.color == Colors.white? Colors.black:Colors.white),
               textAlign: TextAlign.center,
               maxLines: 1,
             ),
@@ -205,7 +205,7 @@ class _LifePadState extends State<LifePad> {
       afterIcon: MdiIcons.diceMultiple,
       condition: viewMode == "rollDice",
       multi: widget.numberOfPlayers == 6 || widget.numberOfPlayers == 5 && widget.id != widget.numberOfPlayers? .66:.7,
-      // position: 'n',
+      color: widget.color == Colors.white? Colors.black:Colors.white,
     );
   }
   Widget paletteOutlineButton(){
@@ -218,7 +218,7 @@ class _LifePadState extends State<LifePad> {
       afterIcon: MdiIcons.palette,
       condition: viewMode == "colorChange",
       multi: widget.numberOfPlayers == 6 || widget.numberOfPlayers == 5 && widget.id != widget.numberOfPlayers? .66:.7,
-      // position: 'n',
+      color: widget.color == Colors.white? Colors.black:Colors.white,
     );
   }
   Widget cardsOutlinedButton(){
@@ -233,8 +233,10 @@ class _LifePadState extends State<LifePad> {
           },
           child: Padding(
             padding: const EdgeInsets.all(2),
-            child: ResponsiveIcon(icon: MdiIcons.shieldHalfFull),
-            //Image.asset("assets/commander.png",color: Colors.white,),
+            child: ResponsiveIcon(
+              icon: MdiIcons.shieldHalfFull,
+              color: widget.color == Colors.white? Colors.black:Colors.white
+            ),
           ),
         ),
       ),
@@ -250,7 +252,7 @@ class _LifePadState extends State<LifePad> {
       afterIcon: MdiIcons.cards,
       condition: viewMode == "tokensEdit",
       multi: widget.numberOfPlayers == 6 || widget.numberOfPlayers == 5 && widget.id != widget.numberOfPlayers? .66:.7,
-      // position: 'topLeft',
+      color: widget.color == Colors.white? Colors.black:Colors.white,
     );
   }
   Widget buttonRow(Function left, Function right, {MainAxisAlignment mainAxisAlignment = MainAxisAlignment.end}){
@@ -284,6 +286,7 @@ class _LifePadState extends State<LifePad> {
               widget.color = color;
             });
           },
+          iconColor: color == Colors.white? Colors.black:Colors.white,
           initialIcon: Icons.check_box_outline_blank,
           afterIcon: Icons.check_box,
           condition: widget.color == color,
@@ -340,7 +343,7 @@ class _LifePadState extends State<LifePad> {
                         child: FittedBox(
                           child: Text(
                             widget.playersInfo[type][widget.id].toString(),
-                            style: boldTextStyle(),
+                            style: boldTextStyle(color: widget.color == Colors.white? Colors.black:Colors.white),
                             textAlign: TextAlign.center,
                           )
                         )
@@ -355,7 +358,7 @@ class _LifePadState extends State<LifePad> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: FittedBox(
-                          child: Text(type.toUpperCase(),style: boldTextStyle()),
+                          child: Text(type.toUpperCase(),style: boldTextStyle(color: widget.color == Colors.white? Colors.black:Colors.white)),
                         ),
                       ),
                     ),
@@ -389,6 +392,7 @@ class _LifePadState extends State<LifePad> {
               rollDicePlus(widget.id, value);
             });
           },
+          iconColor: widget.color == Colors.white? Colors.black:Colors.white,
           initialIcon: dicesMap["outlined"][value],
           afterIcon: dicesMap["normal"][value],
           condition: diceTypeRoll == value,
@@ -407,7 +411,7 @@ class _LifePadState extends State<LifePad> {
           child: AnimatedOpacity(
             duration: Duration(milliseconds: 750),
             opacity: isFirst? 1:0,
-            child: Text("FIRST PLAYER",style: boldTextStyle())
+            child: Text("FIRST PLAYER",style: boldTextStyle(color: widget.color == Colors.white? Colors.black:Colors.white))
           ),
         ),
         Positioned(
@@ -415,7 +419,7 @@ class _LifePadState extends State<LifePad> {
           child: AnimatedOpacity(
             duration: Duration(milliseconds: 100),
             opacity: opacityTemp == 0 && !isFirst && showPlayer? 1:0,
-            child: Text("PLAYER ${widget.id}",style: boldTextStyle())
+            child: Text("PLAYER ${widget.id}",style: boldTextStyle(color: widget.color == Colors.white? Colors.black:Colors.white))
           ),
         ),
         modifierColumn(),
@@ -442,7 +446,7 @@ class _LifePadState extends State<LifePad> {
       child: AnimatedOpacity(
         duration: Duration(milliseconds: 100),
         opacity: opacityTemp,
-        child: Text(temporaryValue.toString(),style: boldTextStyle())
+        child: Text(temporaryValue.toString(),style: boldTextStyle(color: widget.color == Colors.white? Colors.black:Colors.white))
       ),
     );
   }
@@ -475,7 +479,7 @@ class _LifePadState extends State<LifePad> {
                           child: Text(
                             widget.playersInfo['commander'][widget.id][idx].toString(),
                             textAlign: TextAlign.center,
-                            style: boldTextStyle(),
+                            style: boldTextStyle(color: widget.playersInfo['colors'][idx] == Colors.white? Colors.black:Colors.white),
                           )
                       )
                   ),
@@ -488,7 +492,7 @@ class _LifePadState extends State<LifePad> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: FittedBox(
-                        child: Text("Player $idx",style: boldTextStyle()),
+                        child: Text("Player $idx",style: boldTextStyle(color: widget.playersInfo['colors'][idx] == Colors.white? Colors.black:Colors.white)),
                       ),
                     ),
                   ),
@@ -528,7 +532,7 @@ class _LifePadState extends State<LifePad> {
                     child: AnimatedOpacity(
                       duration: Duration(milliseconds: 300),
                       opacity: everyTrue() && rollWinner() || soloRolling? 1:0,
-                      child: Text(soloRolling? "ROLLING A D$diceTypeRoll":"WINNER!",style: boldTextStyle())
+                      child: Text(soloRolling? "ROLLING A D$diceTypeRoll":"WINNER!",style: boldTextStyle(color: widget.color == Colors.white? Colors.black:Colors.white))
                     )
                   ),
 
