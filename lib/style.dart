@@ -551,6 +551,7 @@ class _LifepadSectionState extends State<LifepadSection> {
                           ),
                         ),
                         lifepadButton(
+                          iconColor: widget.color == Colors.white? Colors.black:Colors.white,
                           (){
                             widget.onRandom();
                           },
