@@ -7,12 +7,11 @@ import 'main.dart';
 import 'dart:math';
 
 class LifePad extends StatefulWidget {
-  LifePad({Key? key, this.rollDiceType = 20,this.isPlaying = true,this.isAttacking = false, required this.color,this.quarterTurns = 0, this.base = 40, required this.id, required this.numberOfPlayers, required this.playersInfo}) : super(key: key);
+  LifePad({Key? key, this.rollDiceType = 20,this.isPlaying = true,required this.color,this.quarterTurns = 0, this.base = 40, required this.id, required this.numberOfPlayers, required this.playersInfo}) : super(key: key);
   final int numberOfPlayers;
   final int quarterTurns;
   Color color;
   final Map playersInfo;
-  bool isAttacking;
   final int base;
   final int id;
   bool isPlaying;
@@ -26,10 +25,13 @@ class _LifePadState extends State<LifePad> {
   Timer timeCounterDec = Timer(Duration(seconds: 0),(){});
   String viewMode = "minimalist";
   int diceTypeRoll = 0;
+  int temporaryValue = 0;
   DateTime lastClick = DateTime.now();
+  DateTime lastTemp = DateTime.now();
+  double opacityTemp = 0;
   bool isFirst = false;
   bool soloRolling = false;
-  bool isDead = false;
+  bool showPlayer = false;
 
   // MdiIcons.skullOutlined
 
@@ -95,21 +97,41 @@ class _LifePadState extends State<LifePad> {
   }
 
   int delayCheck = 3;
-  void checkLastClick() {
+  void checkLastClick() async {
     if (DateTime.now().difference(lastClick).inSeconds >= delayCheck && viewMode == "detailed") {
       setState(() {
         changeViewMode(viewMode!="minimalist", "minimalist", "detailed");
       });
     }
+    if (DateTime.now().difference(lastTemp).inSeconds >= delayCheck && viewMode == "minimalist") {
+      setState(() {
+        opacityTemp = 0;
+        Future.delayed(Duration(milliseconds: 100),(){
+          setState(() {
+            temporaryValue = 0;
+          });
+        });
+      });
+    }
   }
 
-  Widget counterModifierButton({int num = 1, int idx = 0, String mode = ''}){
+  Widget counterModifierButton({int num = 1, int idx = 0, String type = 'life'}){
     void onPressed(){
       setState(() {
-        if(mode == "commander"){
+        if(type == "commander"){
           widget.playersInfo['commander'][widget.id][idx] += num;
-        } else {
-          widget.playersInfo['life'][widget.id] += num;
+        }
+        else {
+          widget.playersInfo[type][widget.id] += num;
+          if(type == 'life'){
+            temporaryValue += num;
+          }
+          if(temporaryValue == 0){
+            opacityTemp = 0;
+          }
+          if(!isFirst && temporaryValue != 0){
+            opacityTemp = 1;
+          }
         }
         lastClick = DateTime.now();
         Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -123,15 +145,17 @@ class _LifePadState extends State<LifePad> {
             (timer) {
               onPressed();
               lastClick = DateTime.now();
+              lastTemp =  DateTime.now();
               Future.delayed(Duration(seconds: delayCheck), checkLastClick);
             }
         );
       } else {
         timeCounterDec = Timer.periodic(
             const Duration(milliseconds: 100),
-                (timer) {
+            (timer) {
               onPressed();
               lastClick = DateTime.now();
+              lastTemp =  DateTime.now();
               Future.delayed(Duration(seconds: delayCheck), checkLastClick);
             }
         );
@@ -209,7 +233,8 @@ class _LifePadState extends State<LifePad> {
           },
           child: Padding(
             padding: const EdgeInsets.all(2),
-            child: Image.asset("assets/commander.png",color: Colors.white,),
+            child: ResponsiveIcon(icon: MdiIcons.shieldHalfFull),
+            //Image.asset("assets/commander.png",color: Colors.white,),
           ),
         ),
       ),
@@ -221,8 +246,8 @@ class _LifePadState extends State<LifePad> {
         changeViewMode(viewMode == "tokensEdit","detailed","tokensEdit");
       },
       visibleCondition: viewMode != 'minimalist',
-      initialIcon: MdiIcons.notebookEditOutline,
-      afterIcon: MdiIcons.notebookEdit,
+      initialIcon: MdiIcons.cardsOutline,
+      afterIcon: MdiIcons.cards,
       condition: viewMode == "tokensEdit",
       multi: widget.numberOfPlayers == 6 || widget.numberOfPlayers == 5 && widget.id != widget.numberOfPlayers? .66:.7,
       // position: 'topLeft',
@@ -276,21 +301,23 @@ class _LifePadState extends State<LifePad> {
       setState((){
         last = widget.playersInfo["diceValues"][idx];
         while(widget.playersInfo["diceValues"][idx] == last){
-          widget.playersInfo["diceValues"][idx] = Random().nextInt(max) + 1;
+          widget.playersInfo["diceValues"][idx] = Random().nextInt(99) + 1;
         }
       });
     }
     setState(() {
+      widget.playersInfo["diceValues"][idx] = Random().nextInt(max) + 1;
       widget.playersInfo["rolling"][idx] = true;
     });
   }
 
-  Widget commanderButton({int idx = 0}){
+
+  Widget counterButton({String type = ''}){
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-          color: widget.playersInfo['colors'][idx-1],
+          color: widget.color,
           boxShadow: [
             BoxShadow(
               offset: Offset(0, 5),
@@ -310,7 +337,13 @@ class _LifePadState extends State<LifePad> {
                     child: Padding(
                       padding: const EdgeInsets.all(4),
                       child: SizedBox(
-                        child: FittedBox(child: Text(widget.playersInfo['commander'][widget.id][idx].toString(),style: boldTextStyle()))
+                        child: FittedBox(
+                          child: Text(
+                            widget.playersInfo[type][widget.id].toString(),
+                            style: boldTextStyle(),
+                            textAlign: TextAlign.center,
+                          )
+                        )
                       ),
                     ),
                   ),
@@ -322,7 +355,7 @@ class _LifePadState extends State<LifePad> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: FittedBox(
-                          child: Text("Player $idx",style: boldTextStyle()),
+                          child: Text(type.toUpperCase(),style: boldTextStyle()),
                         ),
                       ),
                     ),
@@ -332,8 +365,8 @@ class _LifePadState extends State<LifePad> {
             ),
             Row(
               children: [
-                counterModifierButton(num: -1,idx: idx,mode: "commander"),
-                counterModifierButton(num: 1,idx: idx,mode: "commander"),
+                counterModifierButton(num: -1,idx: widget.id,type: type),
+                counterModifierButton(num: 1,idx: widget.id,type: type),
               ],
             ),
           ],
@@ -377,6 +410,14 @@ class _LifePadState extends State<LifePad> {
             child: Text("FIRST PLAYER",style: boldTextStyle())
           ),
         ),
+        Positioned(
+          bottom: 10,
+          child: AnimatedOpacity(
+            duration: Duration(milliseconds: 100),
+            opacity: opacityTemp == 0 && !isFirst && showPlayer? 1:0,
+            child: Text("PLAYER ${widget.id}",style: boldTextStyle())
+          ),
+        ),
         modifierColumn(),
         counterValueText(),
         SizedBox(
@@ -392,6 +433,77 @@ class _LifePadState extends State<LifePad> {
         counterValueText(),
         modifierColumn(),
       ],
+    );
+  }
+
+  Widget tempCounter(){
+    return Positioned(
+      bottom: 10,
+      child: AnimatedOpacity(
+        duration: Duration(milliseconds: 100),
+        opacity: opacityTemp,
+        child: Text(temporaryValue.toString(),style: boldTextStyle())
+      ),
+    );
+  }
+  Widget commanderButton({int idx = 0}){
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 100),
+        decoration: BoxDecoration(
+            color: widget.playersInfo['colors'][idx-1],
+            boxShadow: [
+              BoxShadow(
+                  offset: Offset(0, 5),
+                  color: Colors.black38,
+                  blurRadius: 5
+              )
+            ]
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: SizedBox(
+                      width: double.infinity,
+                      child: FittedBox(
+                          child: Text(
+                            widget.playersInfo['commander'][widget.id][idx].toString(),
+                            textAlign: TextAlign.center,
+                            style: boldTextStyle(),
+                          )
+                      )
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 18,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: FittedBox(
+                        child: Text("Player $idx",style: boldTextStyle()),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: [
+                counterModifierButton(num: -1,idx: idx,type: "commander"),
+                counterModifierButton(num: 1,idx: idx,type: "commander"),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -426,6 +538,7 @@ class _LifePadState extends State<LifePad> {
                       setState(() {
                         widget.playersInfo["diceValues"][widget.id] = 0;
                         widget.isPlaying = true;
+                        viewMode = "rollDice";
                         soloRolling = false;
                       });
                     },
@@ -436,6 +549,7 @@ class _LifePadState extends State<LifePad> {
                     ),
                   ),
 
+                tempCounter(),
                 ButtonRow(
                   leftButton: tokensButton(),
                   rightButton: cardsOutlinedButton(),
@@ -468,6 +582,10 @@ class _LifePadState extends State<LifePad> {
                   onRandom: (){
                     setState(() {
                       diceTypeRoll = dicesValues[Random().nextInt(dicesValues.length)];
+                      widget.isPlaying = false;
+                      soloRolling = true;
+                      viewMode = "minimalist";
+                      rollDicePlus(widget.id, diceTypeRoll);
                     });
                   },
                   visible: viewMode == "rollDice",
@@ -479,61 +597,33 @@ class _LifePadState extends State<LifePad> {
                 LifepadSection(
                   onClose: (){
                     changeViewMode(viewMode == "tokensEdit", "detailed", "tokensEdit");
-                    diceTypeRoll = 0;
                   },
                   onRandom: (){
                     setState(() {
-                      diceTypeRoll = dicesValues[Random().nextInt(dicesValues.length)];
+                      countersList.forEach((element) {
+                        widget.playersInfo[element][widget.id] = 0;
+                      });
                     });
                   },
                   visible: viewMode == "tokensEdit",
                   color: widget.color,
                   crossAxisCount: 3,
                   title: "COUNTERS",
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        color: Colors.transparent,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: SizedBox(
-                                    child: RawMaterialButton(
-                                      onPressed: (){},
-                                      child: SizedBox(
-                                        height: double.infinity,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: SizedBox(
-                                    child: RawMaterialButton(
-                                      onPressed: (){},
-                                      child: SizedBox(
-                                        height: double.infinity,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                  children: List.generate(countersList.length, (index) => counterButton(type: countersList[index]))
                 ),
+
                 // commander
                 LifepadSection(
                   onClose: (){
                     changeViewMode(viewMode == "commander", "detailed", "commander");
                   },
-                  onRandom: (){},
+                  onRandom: (){
+                    setState(() {
+                      countersList.forEach((element) {
+                        widget.playersInfo["commander"][widget.id] = List.generate(8, (index) => 0);
+                      });
+                    });
+                  },
                   visible: viewMode == "commander",
                   title: "COMMANDER",
                   color: widget.color,

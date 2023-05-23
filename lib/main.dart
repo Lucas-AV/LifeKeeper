@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     int numberOfPlayers = 2;
     int maxPlayers = 8;
     int base = 40;
-    // Wakelock.enable();
+    Wakelock.enable();
     if(Platform.isAndroid || Platform.isIOS){
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
@@ -27,13 +27,20 @@ class MyApp extends StatelessWidget {
     Map playersInfo = {
       "colors":List.generate(maxPlayers, (index) => colorsList[index]),
       "commander":List.generate(maxPlayers, (index) => List.generate(maxPlayers, (subIndex) => 0)),
-      "initiative":List.generate(maxPlayers, (index) => false),
       "life":List.generate(maxPlayers, (index) => base),
-      "attacking":List.generate(maxPlayers, (index) => false),
-      "ascended":List.generate(maxPlayers, (index) => false),
-      "monarch":List.generate(maxPlayers, (index) => false),
       "rolling":List.generate(maxPlayers, (index) => false),
       "diceValues":List.generate(maxPlayers, (index) => 0),
+
+      "initiative":List.generate(maxPlayers, (index) => false),
+      "ascended":List.generate(maxPlayers, (index) => false),
+      "monarch":List.generate(maxPlayers, (index) => false),
+
+      'infect':List.generate(maxPlayers, (index) => 0),
+      'energy':List.generate(maxPlayers, (index) => 0),
+      'treasure':List.generate(maxPlayers, (index) => 0),
+      'experience':List.generate(maxPlayers, (index) => 0),
+      'cmd. tax':List.generate(maxPlayers, (index) => 0),
+
       "starter":Random().nextInt(numberOfPlayers)+1,
       "numberOfPlayers":maxPlayers,
       "base":base,

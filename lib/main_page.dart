@@ -51,11 +51,12 @@ class _MainPageState extends State<MainPage> {
       setState((){
         last = widget.playersInfo["diceValues"][idx];
         while(widget.playersInfo["diceValues"][idx] == last){
-          widget.playersInfo["diceValues"][idx] = Random().nextInt(max) + 1;
+          widget.playersInfo["diceValues"][idx] = Random().nextInt(99) + 1;
         }
       });
     }
     setState(() {
+      widget.playersInfo["diceValues"][idx] = Random().nextInt(max) + 1;
       widget.playersInfo["rolling"][idx] = true;
     });
   }
@@ -184,6 +185,16 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         widget.playersInfo["diceValues"] = List.generate(maxPlayers+1, (index) => 0);
         widget.playersInfo["commander"] = List.generate(maxPlayers+1, (index) => List.generate(maxPlayers+1, (subIndex) => 0));
+        widget.playersInfo["life"] = List.generate(maxPlayers+1, (index) => widget.base);
+
+        ['initiative','ascended','monarch'].forEach((element) {
+          widget.playersInfo[element] = List.generate(maxPlayers+1, (index) => false);
+        });
+
+        countersList.forEach((element) {
+          widget.playersInfo[element] = List.generate(maxPlayers+1, (index) => 0);
+        });
+
         centerButtonClicked = false;
         widget.isPlaying = true;
       });
@@ -352,6 +363,7 @@ class _MainPageState extends State<MainPage> {
           onPressed: (){
             setState(() {
               play = false;
+              widget.playersInfo['diceValues'] = List.generate(8, (index) => 0);
             });
             Navigator.push(
               context,
@@ -366,15 +378,6 @@ class _MainPageState extends State<MainPage> {
                 )
               ),
             );
-            // Future.delayed(Duration(seconds: 5),(){
-            //   if(!play){
-            //     Navigator.pop(context);
-            //   }
-            // }).then((value){
-            //   setState(() {
-            //     play = true;
-            //   });
-            // });
           },
           child: ResponsiveIcon(icon: dicesMap["normal"]![value],color: Colors.black),
         )

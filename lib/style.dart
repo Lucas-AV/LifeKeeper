@@ -2,6 +2,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:flutter/material.dart';
 import 'lifepad.dart';
 
+
+List countersList = ['infect','energy','experience','treasure','cmd. tax'];
 bool play = true;
 
 Map dicesMap = {
@@ -483,7 +485,7 @@ class ButtonRow extends StatelessWidget {
   }
 }
 
-class LifepadSection extends StatelessWidget {
+class LifepadSection extends StatefulWidget {
   LifepadSection({
     Key? key,
     this.title = "ROLL A DICE",
@@ -503,13 +505,18 @@ class LifepadSection extends StatelessWidget {
   Color color;
 
   @override
+  State<LifepadSection> createState() => _LifepadSectionState();
+}
+
+class _LifepadSectionState extends State<LifepadSection> {
+  @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible: visible,
+      visible: widget.visible,
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),
         width: double.infinity,
-        decoration: lifepadBoxDecoration(color),
+        decoration: lifepadBoxDecoration(widget.color),
         child: Column(
           children: [
             Container(
@@ -525,7 +532,7 @@ class LifepadSection extends StatelessWidget {
                       children: [
                         lifepadButton(
                           (){
-                            onClose();
+                            widget.onClose();
                           },
                           icon: Icons.close,
                         ),
@@ -534,7 +541,7 @@ class LifepadSection extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 5),
                             child: FittedBox(
                               child: Text(
-                                title,
+                                widget.title,
                                 style: boldTextStyle()
                               ),
                             ),
@@ -542,9 +549,9 @@ class LifepadSection extends StatelessWidget {
                         ),
                         lifepadButton(
                           (){
-                            onRandom();
+                            widget.onRandom();
                           },
-                          icon: Icons.question_mark,
+                          icon: widget.title != "CHOOSE A COLOR" && widget.title != "ROLL A DICE"? MdiIcons.refresh:Icons.question_mark,
                         ),
                       ],
                     );
@@ -553,8 +560,8 @@ class LifepadSection extends StatelessWidget {
             ),
             Expanded(
               child: GridView.count(
-                crossAxisCount: crossAxisCount,
-                children: children,
+                crossAxisCount: widget.crossAxisCount,
+                children: widget.children,
               ),
             )
           ],
