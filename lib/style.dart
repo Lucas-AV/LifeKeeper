@@ -35,19 +35,23 @@ List<Color> colorsList = [
 
   Colors.deepOrange,
   Colors.pink,
+  Colors.white,
   Color.fromRGBO(110,142,36,1),
-  Colors.deepPurple,
 
+  Colors.deepPurple,
   const Color(0xff14453D),
   Color.fromRGBO(146,73,39,1),
   const Color(0xff484743),
-  Colors.teal,
 
+  Colors.teal,
   Colors.pinkAccent,
   Color.fromRGBO(4,85,40,1),
   Colors.redAccent,
-  Color.fromRGBO(15,14,58,1),
 
+  const Color(0xff413145),
+  Color.fromRGBO(15,14,58,1),
+  Color.fromRGBO(87,138,174,1),
+  Colors.purple,
 ];
 
 Map<String, Color> colorMap = {
@@ -527,7 +531,7 @@ class _LifepadSectionState extends State<LifepadSection> {
                   maxHeight: 60,
                   maxWidth: double.infinity,
                 ),
-                color: Colors.black26,
+                color: widget.color == Colors.white? Colors.black12:Colors.black26,
                 child: LayoutBuilder(
                   builder: (context,constraints){
                     return Row(
@@ -537,6 +541,7 @@ class _LifepadSectionState extends State<LifepadSection> {
                           (){
                             widget.onClose();
                           },
+                          iconColor: widget.color == Colors.white? Colors.black:Colors.white,
                           icon: Icons.close,
                         ),
                         Expanded(
@@ -545,17 +550,20 @@ class _LifepadSectionState extends State<LifepadSection> {
                             child: FittedBox(
                               child: Text(
                                 widget.title,
-                                style: boldTextStyle()
+                                style: boldTextStyle(
+                                  color: widget.color == Colors.white? Colors.black:Colors.white,
+                                )
                               ),
                             ),
                           ),
                         ),
                         lifepadButton(
-                          iconColor: widget.color == Colors.white? Colors.black:Colors.white,
                           (){
                             widget.onRandom();
                           },
-                          icon: widget.title != "CHOOSE A COLOR" && widget.title != "ROLL A DICE"? MdiIcons.refresh:Icons.question_mark,
+                          icon: widget.title != "CHOOSE A COLOR" && widget.title != "ROLL A DICE"?
+                          MdiIcons.refresh:Icons.question_mark,
+                          iconColor: widget.color == Colors.white? Colors.black:Colors.white,
                         ),
                       ],
                     );

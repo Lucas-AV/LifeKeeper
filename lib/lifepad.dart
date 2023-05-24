@@ -459,9 +459,9 @@ class _LifePadState extends State<LifePad> {
             color: widget.playersInfo['colors'][idx-1],
             boxShadow: [
               BoxShadow(
-                  offset: Offset(0, 5),
-                  color: Colors.black38,
-                  blurRadius: 5
+                offset: Offset(0, 5),
+                color: Colors.black38,
+                blurRadius: 5
               )
             ]
         ),
@@ -479,7 +479,10 @@ class _LifePadState extends State<LifePad> {
                           child: Text(
                             widget.playersInfo['commander'][widget.id][idx].toString(),
                             textAlign: TextAlign.center,
-                            style: boldTextStyle(color: widget.playersInfo['colors'][idx] == Colors.white? Colors.black:Colors.white),
+                            style: boldTextStyle(
+                              color: widget.playersInfo['colors'][idx-1] == Colors.white?
+                              Colors.black:Colors.white
+                            ),
                           )
                       )
                   ),
@@ -492,7 +495,13 @@ class _LifePadState extends State<LifePad> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: FittedBox(
-                        child: Text("Player $idx",style: boldTextStyle(color: widget.playersInfo['colors'][idx] == Colors.white? Colors.black:Colors.white)),
+                        child: Text(
+                          "Player $idx",
+                          style: boldTextStyle(
+                            color: widget.playersInfo['colors'][idx-1] == Colors.white?
+                            Colors.black:Colors.white
+                          )
+                        ),
                       ),
                     ),
                   ),
@@ -526,13 +535,16 @@ class _LifePadState extends State<LifePad> {
               children: [
                 widget.isPlaying?lifeStack():counterValueText(),
 
+                tempCounter(),
                 if(!widget.isPlaying)
                   Positioned(
                     bottom: 10,
                     child: AnimatedOpacity(
                       duration: Duration(milliseconds: 300),
                       opacity: everyTrue() && rollWinner() || soloRolling? 1:0,
-                      child: Text(soloRolling? "ROLLING A D$diceTypeRoll":"WINNER!",style: boldTextStyle(color: widget.color == Colors.white? Colors.black:Colors.white))
+                      child: Container(
+                          color: widget.color,
+                          child: Text(soloRolling? "ROLLING A D$diceTypeRoll":"WINNER!",style: boldTextStyle(color: widget.color == Colors.white? Colors.black:Colors.white)))
                     )
                   ),
 
@@ -553,7 +565,6 @@ class _LifePadState extends State<LifePad> {
                     ),
                   ),
 
-                tempCounter(),
                 ButtonRow(
                   leftButton: tokensButton(),
                   rightButton: cardsOutlinedButton(),
