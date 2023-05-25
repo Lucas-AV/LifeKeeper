@@ -21,8 +21,38 @@ class LifePad extends StatefulWidget {
 }
 
 class _LifePadState extends State<LifePad> {
+
+  // Basic ADD // DEC
   Timer timeCounterAdd = Timer(Duration(seconds: 0),(){});
   Timer timeCounterDec = Timer(Duration(seconds: 0),(){});
+
+
+  // Counters section Timers
+  Timer timeCounterAddINF = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterDecINF = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterAddEXP = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterDecEXP = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterAddENR = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterDecENR = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterAddTRS = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterDecTRS = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterAddCMDT = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterDecCMDT = Timer(Duration(seconds: 0),(){});
+
+  // Commander Counter Players
+  Timer timeCounterAddCMD1 = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterDecCMD1 = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterAddCMD2 = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterDecCMD2 = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterAddCMD3 = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterDecCMD3 = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterAddCMD4 = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterDecCMD4 = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterAddCMD5 = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterDecCMD5 = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterAddCMD6 = Timer(Duration(seconds: 0),(){});
+  Timer timeCounterDecCMD6 = Timer(Duration(seconds: 0),(){});
+
   String viewMode = "minimalist";
   int diceTypeRoll = 0;
   int temporaryValue = 0;
@@ -70,6 +100,8 @@ class _LifePadState extends State<LifePad> {
   @override
   void initState(){
     super.initState();
+    timeCounterAdd.cancel();
+    timeCounterDec.cancel();
     if(widget.isPlaying){
       start();
     }
@@ -123,7 +155,7 @@ class _LifePadState extends State<LifePad> {
         }
         else {
           widget.playersInfo[type][widget.id] += num;
-          if(type == 'life'){
+          if(type == 'life') {
             temporaryValue += num;
           }
           if(temporaryValue == 0){
@@ -140,7 +172,8 @@ class _LifePadState extends State<LifePad> {
 
     void onLongPress(){
       if(num == 1){
-        timeCounterAdd = Timer.periodic(
+        if(type == 'life'){
+          timeCounterAdd = Timer.periodic(
             const Duration(milliseconds: 100),
             (timer) {
               onPressed();
@@ -148,9 +181,54 @@ class _LifePadState extends State<LifePad> {
               lastTemp =  DateTime.now();
               Future.delayed(Duration(seconds: delayCheck), checkLastClick);
             }
-        );
-      } else {
-        timeCounterDec = Timer.periodic(
+          );
+        }
+        else if(type == 'infect'){
+          timeCounterAddINF = Timer.periodic(
+              const Duration(milliseconds: 100),
+              (timer) {
+                onPressed();
+                lastClick = DateTime.now();
+                lastTemp =  DateTime.now();
+                Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+              }
+          );
+        }
+        else if(type == 'energy'){
+          timeCounterAddENR = Timer.periodic(
+              const Duration(milliseconds: 100),
+              (timer) {
+                onPressed();
+                lastClick = DateTime.now();
+                lastTemp =  DateTime.now();
+                Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+              }
+          );
+        }
+        else if(type == 'experience'){
+          timeCounterAddEXP = Timer.periodic(
+              const Duration(milliseconds: 100),
+              (timer) {
+                onPressed();
+                lastClick = DateTime.now();
+                lastTemp =  DateTime.now();
+                Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+              }
+          );
+        }
+        else if(type == 'treasure'){
+          timeCounterAddTRS = Timer.periodic(
+              const Duration(milliseconds: 100),
+              (timer) {
+                onPressed();
+                lastClick = DateTime.now();
+                lastTemp =  DateTime.now();
+                Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+              }
+          );
+        }
+        else if(type == 'cmd. tax'){
+          timeCounterAddCMDT = Timer.periodic(
             const Duration(milliseconds: 100),
             (timer) {
               onPressed();
@@ -158,12 +236,265 @@ class _LifePadState extends State<LifePad> {
               lastTemp =  DateTime.now();
               Future.delayed(Duration(seconds: delayCheck), checkLastClick);
             }
-        );
+          );
+        }
+        else if(type == "commander"){
+          switch(idx){
+            case 1:
+              timeCounterAddCMD1 = Timer.periodic(
+                const Duration(milliseconds: 100),
+                    (timer) {
+                  onPressed();
+                  lastClick = DateTime.now();
+                  lastTemp =  DateTime.now();
+                  Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                }
+              );
+              break;
+            case 2:
+              timeCounterAddCMD2 = Timer.periodic(
+                  const Duration(milliseconds: 100),
+                  (timer) {
+                    onPressed();
+                    lastClick = DateTime.now();
+                    lastTemp =  DateTime.now();
+                    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                  }
+              );
+              break;
+            case 3:
+              timeCounterAddCMD3 = Timer.periodic(
+                  const Duration(milliseconds: 100),
+                  (timer) {
+                    onPressed();
+                    lastClick = DateTime.now();
+                    lastTemp =  DateTime.now();
+                    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                  }
+              );
+              break;
+            case 4:
+              timeCounterAddCMD4 = Timer.periodic(
+                  const Duration(milliseconds: 100),
+                      (timer) {
+                    onPressed();
+                    lastClick = DateTime.now();
+                    lastTemp =  DateTime.now();
+                    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                  }
+              );
+              break;
+            case 5:
+              timeCounterAddCMD5 = Timer.periodic(
+                  const Duration(milliseconds: 100),
+                      (timer) {
+                    onPressed();
+                    lastClick = DateTime.now();
+                    lastTemp =  DateTime.now();
+                    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                  }
+              );
+              break;
+            case 6:
+              timeCounterAddCMD6 = Timer.periodic(
+                  const Duration(milliseconds: 100),
+                      (timer) {
+                    onPressed();
+                    lastClick = DateTime.now();
+                    lastTemp =  DateTime.now();
+                    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                  }
+              );
+              break;
+
+          }
+        }
+
+
+      }
+      else {
+        if(type == 'life'){
+          timeCounterDec = Timer.periodic(
+              const Duration(milliseconds: 100),
+                  (timer) {
+                onPressed();
+                lastClick = DateTime.now();
+                lastTemp =  DateTime.now();
+                Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+              }
+          );
+        }
+        else if(type == 'infect'){
+          timeCounterDecINF = Timer.periodic(
+              const Duration(milliseconds: 100),
+                  (timer) {
+                onPressed();
+                lastClick = DateTime.now();
+                lastTemp =  DateTime.now();
+                Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+              }
+          );
+        }
+        else if(type == 'energy'){
+          timeCounterDecENR = Timer.periodic(
+              const Duration(milliseconds: 100),
+                  (timer) {
+                onPressed();
+                lastClick = DateTime.now();
+                lastTemp =  DateTime.now();
+                Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+              }
+          );
+        }
+        else if(type == 'experience'){
+          timeCounterDecEXP = Timer.periodic(
+              const Duration(milliseconds: 100),
+                  (timer) {
+                onPressed();
+                lastClick = DateTime.now();
+                lastTemp =  DateTime.now();
+                Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+              }
+          );
+        }
+        else if(type == 'treasure'){
+          timeCounterDecTRS = Timer.periodic(
+              const Duration(milliseconds: 100),
+                  (timer) {
+                onPressed();
+                lastClick = DateTime.now();
+                lastTemp =  DateTime.now();
+                Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+              }
+          );
+        }
+        else if(type == 'cmd. tax'){
+          timeCounterDecCMDT = Timer.periodic(
+              const Duration(milliseconds: 100),
+                  (timer) {
+                onPressed();
+                lastClick = DateTime.now();
+                lastTemp =  DateTime.now();
+                Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+              }
+          );
+        }
+        else if(type == "commander"){
+          switch(idx){
+            case 1:
+              timeCounterDecCMD1 = Timer.periodic(
+                  const Duration(milliseconds: 100),
+                      (timer) {
+                    onPressed();
+                    lastClick = DateTime.now();
+                    lastTemp =  DateTime.now();
+                    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                  }
+              );
+              break;
+            case 2:
+              timeCounterDecCMD2 = Timer.periodic(
+                  const Duration(milliseconds: 100),
+                      (timer) {
+                    onPressed();
+                    lastClick = DateTime.now();
+                    lastTemp =  DateTime.now();
+                    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                  }
+              );
+              break;
+            case 3:
+              timeCounterDecCMD3 = Timer.periodic(
+                  const Duration(milliseconds: 100),
+                      (timer) {
+                    onPressed();
+                    lastClick = DateTime.now();
+                    lastTemp =  DateTime.now();
+                    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                  }
+              );
+              break;
+            case 4:
+              timeCounterDecCMD4 = Timer.periodic(
+                  const Duration(milliseconds: 100),
+                      (timer) {
+                    onPressed();
+                    lastClick = DateTime.now();
+                    lastTemp =  DateTime.now();
+                    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                  }
+              );
+              break;
+            case 5:
+              timeCounterDecCMD5 = Timer.periodic(
+                  const Duration(milliseconds: 100),
+                      (timer) {
+                    onPressed();
+                    lastClick = DateTime.now();
+                    lastTemp =  DateTime.now();
+                    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                  }
+              );
+              break;
+            case 6:
+              timeCounterDecCMD6 = Timer.periodic(
+                  const Duration(milliseconds: 100),
+                      (timer) {
+                    onPressed();
+                    lastClick = DateTime.now();
+                    lastTemp =  DateTime.now();
+                    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+                  }
+              );
+              break;
+          }
+        }
       }
     }
 
     void onLongEnd(LongPressEndDetails details) {
-      num == 1? timeCounterAdd.cancel() : timeCounterDec.cancel();
+      switch(type){
+        case 'life':
+          num == 1? timeCounterAdd.cancel() : timeCounterDec.cancel();
+          break;
+        case 'infect':
+          num == 1? timeCounterAddINF.cancel() : timeCounterDecINF.cancel();
+          break;
+        case 'energy':
+          num == 1? timeCounterAddENR.cancel() : timeCounterDecENR.cancel();
+          break;
+        case 'experience':
+          num == 1? timeCounterAddEXP.cancel() : timeCounterDecEXP.cancel();
+          break;
+        case 'treasure':
+          num == 1? timeCounterAddTRS.cancel() : timeCounterDecTRS.cancel();
+          break;
+        case 'cmd. tax':
+          num == 1? timeCounterAddCMDT.cancel() : timeCounterDecCMDT.cancel();
+          break;
+        case 'commander':
+          switch(idx){
+            case 1:
+              num == 1? timeCounterAddCMD1.cancel() : timeCounterDecCMD1.cancel();
+              break;
+            case 2:
+              num == 1? timeCounterAddCMD2.cancel() : timeCounterDecCMD2.cancel();
+              break;
+            case 3:
+              num == 1? timeCounterAddCMD3.cancel() : timeCounterDecCMD3.cancel();
+              break;
+            case 4:
+              num == 1? timeCounterAddCMD4.cancel() : timeCounterDecCMD4.cancel();
+              break;
+            case 5:
+              num == 1? timeCounterAddCMD5.cancel() : timeCounterDecCMD5.cancel();
+              break;
+            case 6:
+              num == 1? timeCounterAddCMD6.cancel() : timeCounterDecCMD6.cancel();
+              break;
+          }
+          break;
+      }
     }
 
     return Expanded(
@@ -524,6 +855,10 @@ class _LifePadState extends State<LifePad> {
 
   @override
   Widget build(BuildContext context) {
+    if(!widget.isPlaying){
+      timeCounterAdd.cancel();
+      timeCounterDec.cancel();
+    }
     return Expanded(
       child: RotatedBox(
         quarterTurns: widget.quarterTurns,
