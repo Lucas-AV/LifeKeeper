@@ -163,7 +163,7 @@ class _LifePadState extends State<LifePad> {
     }
 
     void onLongEnd(LongPressEndDetails details) {
-      num == 1? timeCounterAdd?.cancel() : timeCounterDec?.cancel();
+      num == 1? timeCounterAdd.cancel() : timeCounterDec.cancel();
     }
 
     return Expanded(
@@ -425,8 +425,8 @@ class _LifePadState extends State<LifePad> {
         modifierColumn(),
         counterValueText(),
         SizedBox(
-          height: 90,
-          width: 90,
+          height: !timeCounterDec.isActive && !timeCounterAdd.isActive?90:0,
+          width: !timeCounterDec.isActive && !timeCounterAdd.isActive?90:0,
           child: GestureDetector(
             onTap: (){
               changeViewMode(viewMode != "minimalist", "minimalist", "detailed");
