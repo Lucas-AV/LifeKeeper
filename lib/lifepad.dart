@@ -189,9 +189,11 @@ class _LifePadState extends State<LifePad> {
 
   void changeViewMode(bool modeCondition,String isTrue, String isFalse){
     setState(() {
-      viewMode = modeCondition? isTrue:isFalse;
-      lastClick = DateTime.now();
-      Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+      if(!timeCounterAdd.isActive && !timeCounterDec.isActive) {
+        viewMode = modeCondition ? isTrue : isFalse;
+        lastClick = DateTime.now();
+        Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+      }
     });
   }
 
