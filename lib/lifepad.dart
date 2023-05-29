@@ -520,7 +520,7 @@ class _LifePadState extends State<LifePad> {
 
   void changeViewMode(bool modeCondition,String isTrue, String isFalse){
     setState(() {
-      if(!timeCounterAdd.isActive && !timeCounterDec.isActive) {
+      if(isAllCountersOff()) {
         viewMode = modeCondition ? isTrue : isFalse;
         lastClick = DateTime.now();
         Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -744,7 +744,9 @@ class _LifePadState extends State<LifePad> {
           child: AnimatedOpacity(
             duration: Duration(milliseconds: 750),
             opacity: isFirst? 1:0,
-            child: Text("FIRST PLAYER",style: boldTextStyle(color: widget.color == Colors.white? Colors.black:Colors.white))
+            child: Container(
+                color: widget.color,
+                child: Text("FIRST PLAYER",style: boldTextStyle(color: widget.color == Colors.white? Colors.black:Colors.white)))
           ),
         ),
         Positioned(
@@ -853,6 +855,35 @@ class _LifePadState extends State<LifePad> {
     );
   }
 
+  bool isAnyCounterActive(){
+    return timeCounterAdd.isActive || timeCounterDec.isActive ||
+    timeCounterAddCMD1.isActive || timeCounterDecCMD1.isActive ||
+    timeCounterAddCMD2.isActive || timeCounterDecCMD2.isActive ||
+    timeCounterAddCMD3.isActive || timeCounterDecCMD3.isActive ||
+    timeCounterAddCMD4.isActive || timeCounterDecCMD4.isActive ||
+    timeCounterAddCMD5.isActive || timeCounterDecCMD5.isActive ||
+    timeCounterAddCMD6.isActive || timeCounterDecCMD6.isActive ||
+    timeCounterAddCMDT.isActive || timeCounterDecCMDT.isActive ||
+    timeCounterAddINF.isActive || timeCounterDecINF.isActive ||
+    timeCounterAddENR.isActive || timeCounterDecENR.isActive ||
+    timeCounterAddEXP.isActive || timeCounterDecEXP.isActive ||
+    timeCounterAddTRS.isActive || timeCounterDecTRS.isActive;
+  }
+  bool isAllCountersOff(){
+    return !timeCounterAdd.isActive && !timeCounterDec.isActive &&
+    !timeCounterAddCMD1.isActive && !timeCounterDecCMD1.isActive &&
+    !timeCounterAddCMD2.isActive && !timeCounterDecCMD2.isActive &&
+    !timeCounterAddCMD3.isActive && !timeCounterDecCMD3.isActive &&
+    !timeCounterAddCMD4.isActive && !timeCounterDecCMD4.isActive &&
+    !timeCounterAddCMD5.isActive && !timeCounterDecCMD5.isActive &&
+    !timeCounterAddCMD6.isActive && !timeCounterDecCMD6.isActive &&
+    !timeCounterAddCMDT.isActive && !timeCounterDecCMDT.isActive &&
+    !timeCounterAddINF.isActive && !timeCounterDecINF.isActive &&
+    !timeCounterAddENR.isActive && !timeCounterDecENR.isActive &&
+    !timeCounterAddEXP.isActive && !timeCounterDecEXP.isActive &&
+    !timeCounterAddTRS.isActive && !timeCounterDecTRS.isActive;
+  }
+
   @override
   Widget build(BuildContext context) {
     if(!widget.isPlaying){
@@ -870,6 +901,8 @@ class _LifePadState extends State<LifePad> {
             child: Stack(
               alignment: Alignment.center,
               children: [
+                if(isAnyCounterActive())
+                  SizedBox(),
                 widget.isPlaying?lifeStack():counterValueText(),
 
                 tempCounter(),
@@ -982,6 +1015,7 @@ class _LifePadState extends State<LifePad> {
                   crossAxisCount: 3,
                   children: List.generate(widget.numberOfPlayers, (index) => commanderButton(idx: index+1)),
                 ),
+
               ],
             ),
           ),
