@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
       "life":List.generate(maxPlayers, (index) => base),
       "rolling":List.generate(maxPlayers, (index) => false),
       "diceValues":List.generate(maxPlayers, (index) => 0),
+      "activeTemp":List.generate(maxPlayers, (index) => false),
 
       "initiative":List.generate(maxPlayers, (index) => false),
       "ascended":List.generate(maxPlayers, (index) => false),

@@ -130,19 +130,13 @@ class _LifePadState extends State<LifePad> {
 
   int delayCheck = 3;
   void checkLastClick() async {
-    if (DateTime.now().difference(lastClick).inSeconds >= delayCheck && viewMode == "detailed") {
-      setState(() {
-        changeViewMode(viewMode!="minimalist", "minimalist", "detailed");
-      });
-    }
-    if (DateTime.now().difference(lastTemp).inSeconds >= delayCheck && viewMode == "minimalist") {
+    if (DateTime.now().difference(lastClick).inSeconds >= delayCheck) {
       setState(() {
         opacityTemp = 0;
-        Future.delayed(Duration(milliseconds: 100),(){
-          setState(() {
-            temporaryValue = 0;
-          });
-        });
+        Future.delayed(Duration(milliseconds: 200)).then((value) => temporaryValue = 0);
+        if(viewMode == "detailed"){
+          changeViewMode(viewMode!="minimalist", "minimalist", "detailed");
+        }
       });
     }
   }
@@ -165,12 +159,16 @@ class _LifePadState extends State<LifePad> {
             opacityTemp = 1;
           }
         }
-        lastClick = DateTime.now();
-        Future.delayed(Duration(seconds: delayCheck), checkLastClick);
       });
+      lastClick = DateTime.now();
+      Future.delayed(Duration(seconds: delayCheck), checkLastClick);
     }
 
     void onLongPress(){
+      setState(() {
+        widget.playersInfo['activeTemp'][widget.id] = true;
+      });
+
       if(num == 1){
         if(type == 'life'){
           timeCounterAdd = Timer.periodic(
@@ -453,6 +451,9 @@ class _LifePadState extends State<LifePad> {
     }
 
     void onLongEnd(LongPressEndDetails details) {
+      setState(() {
+        widget.playersInfo['activeTemp'][widget.id] = false;
+      });
       switch(type){
         case 'life':
           num == 1? timeCounterAdd.cancel() : timeCounterDec.cancel();
@@ -510,10 +511,10 @@ class _LifePadState extends State<LifePad> {
   }
 
   Widget modifierColumn(){
-    return Row(
+    return Column(
       children: [
-        counterModifierButton(num: -1),
         counterModifierButton(num: 1),
+        counterModifierButton(num: -1),
       ],
     );
   }
@@ -699,10 +700,10 @@ class _LifePadState extends State<LifePad> {
                 ],
               ),
             ),
-            Row(
+            Column(
               children: [
-                counterModifierButton(num: -1,idx: widget.id,type: type),
                 counterModifierButton(num: 1,idx: widget.id,type: type),
+                counterModifierButton(num: -1,idx: widget.id,type: type),
               ],
             ),
           ],
@@ -843,10 +844,10 @@ class _LifePadState extends State<LifePad> {
                 )
               ],
             ),
-            Row(
+            Column(
               children: [
-                counterModifierButton(num: -1,idx: idx,type: "commander"),
                 counterModifierButton(num: 1,idx: idx,type: "commander"),
+                counterModifierButton(num: -1,idx: idx,type: "commander"),
               ],
             ),
           ],

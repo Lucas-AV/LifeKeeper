@@ -735,8 +735,10 @@ class _MainPageState extends State<MainPage> {
                   child: GestureDetector(
                       onTap: (){
                         setState(() {
-                          centerButtonClicked = centerButtonClicked? false:true;
-                          menuViewMode = "main";
+                          if(widget.playersInfo["activeTemp"].every((element) => element == false)){
+                            centerButtonClicked = centerButtonClicked? false:true;
+                            menuViewMode = "main";
+                          }
                           // widget.numberOfPlayers++;
                           // if(widget.numberOfPlayers > 6){
                           //   widget.numberOfPlayers = 2;
