@@ -49,7 +49,7 @@ List<Color> colorsList = [
   Colors.redAccent,
 
   const Color(0xff413145),
-  Color.fromRGBO(15,14,58,1),
+  const Color(0xff16425B),
   Color.fromRGBO(87,138,174,1),
   Colors.purple,
 ];
