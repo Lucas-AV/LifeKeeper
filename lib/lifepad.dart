@@ -578,75 +578,83 @@ class _LifePadState extends State<LifePad> {
 
     bool allIsZero = widget.playersInfo['commander'][widget.id].every((element) => element == 0);
     return Visibility(
-      visible: (viewMode == "detailed" || viewMode == "minimalist" && !allIsZero) && !soloRolling,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: GestureDetector(
-          onTap: (){
-            changeViewMode(viewMode == "commander","detailed","commander");
-          },
-          child: Container(
-            color: Colors.transparent,
-            width: 50,
-            height: 45,
-            child: Padding(
-              padding: allIsZero? EdgeInsets.only(right: 2,top: 2) : EdgeInsets.only(right: 8,bottom: 0),
-              child: allIsZero? Padding(
-                padding: const EdgeInsets.all(2),
-                child: ResponsiveIcon(
-                  icon: MdiIcons.shieldHalfFull,
-                  color: widget.color == Colors.white? Colors.black:Colors.white
-                ),
-              ) : Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    height: 40,
-                    width: 40,
-                    child: FittedBox(
-                      child: Text(
-                        maxValue().toString(),
-                        textAlign: TextAlign.center,
-                        style: boldTextStyle(
-                          color: widget.color == Colors.white?
-                          Colors.black:Colors.white
-                        ),
-                      )
-                    ),
+      visible: (viewMode == "detailed" || viewMode == "minimalist" && !allIsZero) && !soloRolling && widget.isPlaying,
+      child: Row(
+        children: [
+          Padding(
+            padding: allIsZero? EdgeInsets.only(left: 2,top: 2) : EdgeInsets.only(left: 0,bottom: 10),
+            child: GestureDetector(
+              onTap: (){
+                changeViewMode(viewMode == "commander","detailed","commander");
+              },
+              child: Container(
+                color: Colors.transparent,
+                width: 50,
+                height: 45,
+                child: allIsZero? Padding(
+                  padding: const EdgeInsets.all(2),
+                  child: ResponsiveIcon(
+                    icon: MdiIcons.shieldHalfFull,
+                    color: widget.color == Colors.white? Colors.black:Colors.white
                   ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
-                      height: 15,
-                      width: 15,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100),
-                          color: miniColor.withOpacity(0.5),
-                          boxShadow:[
-                            BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 2,
-                                offset: Offset(0,3)
+                ) : Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      height: 40,
+                      width: 40,
+                      child: FittedBox(
+                          child: Text(
+                            maxValue().toString(),
+                            textAlign: TextAlign.center,
+                            style: boldTextStyle(
+                                color: widget.color == Colors.white?
+                                Colors.black:Colors.white
                             ),
-                            BoxShadow(
-                              color: miniColor,
-                              blurRadius: 1
-                            )
-                          ]
-                      ),
-                      child: ResponsiveIcon(
-                        icon: MdiIcons.shieldHalfFull,
-                        color: widget.color == Colors.white? Colors.black:Colors.white,
-                        multi: 0.8,
+                          )
                       ),
                     ),
-                  )
-                ],
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        height: 15,
+                        width: 15,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            color: widget.color.withOpacity(0.5),
+                            boxShadow:[
+                              BoxShadow(
+                                  color: Colors.black26,
+                                  blurRadius: 2,
+                                  offset: Offset(0,3)
+                              ),
+                              BoxShadow(
+                                color: widget.color,
+                                blurRadius: 1,
+                              ),
+                            ]
+                        ),
+                        child: ResponsiveIcon(
+                          icon: MdiIcons.shieldHalfFull,
+                          color: widget.color == Colors.white? Colors.black:Colors.white,
+                          multi: .8,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
-        ),
+          if(!allIsZero)
+            GestureDetector(
+              onTap: (){
+                changeViewMode(viewMode == "commander","detailed","commander");
+              },
+              child: SizedBox(width: 4)
+            ),
+        ],
       ),
     );
   }
@@ -654,7 +662,7 @@ class _LifePadState extends State<LifePad> {
     return Visibility(
       visible: (viewMode == "detailed" ||
       widget.playersInfo['infect'][widget.id] != 0 &&
-      viewMode == "minimalist") && !soloRolling,
+      viewMode == "minimalist") && !soloRolling && widget.isPlaying,
       child: Padding(
         padding: widget.playersInfo['infect'][widget.id] == 0? EdgeInsets.only(left: 2,top: 2) : EdgeInsets.only(left: 0,bottom: 10),
         child: GestureDetector(
@@ -722,17 +730,6 @@ class _LifePadState extends State<LifePad> {
         ),
       ),
     );
-    // return PositionedButton(
-    //   onPressed: (){
-    //     changeViewMode(viewMode == "tokensEdit","detailed","tokensEdit");
-    //   },
-    //   visibleCondition: viewMode != 'minimalist',
-    //   initialIcon: MdiIcons.hazardLights,
-    //   afterIcon: MdiIcons.cards,
-    //   condition: viewMode == "tokensEdit",
-    //   multi: widget.numberOfPlayers == 6 || widget.numberOfPlayers == 5 && widget.id != widget.numberOfPlayers? .66:.7,
-    //   color: widget.color == Colors.white? Colors.black:Colors.white,
-    // );
   }
 
   Widget buttonRow(Function left, Function right, {MainAxisAlignment mainAxisAlignment = MainAxisAlignment.end}){
