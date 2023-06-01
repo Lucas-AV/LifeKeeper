@@ -1,10 +1,10 @@
-import 'dart:math';
 
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:lifekeeper/style.dart';
 import 'lifepad.dart';
+import 'style.dart';
 import 'dart:async';
+import 'dart:math';
 
 class CenterButton extends StatelessWidget {
   const CenterButton({Key? key}) : super(key: key);

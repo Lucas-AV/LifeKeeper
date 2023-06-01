@@ -1,10 +1,11 @@
-import 'dart:io';
-import 'style.dart';
-import 'package:flutter/material.dart';
-import 'main_page.dart';
-import 'dart:math';
-import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'main_page.dart';
+import 'style.dart';
+import 'dart:math';
+import 'dart:io';
+
 void main() {
   runApp(const MyApp());
 }

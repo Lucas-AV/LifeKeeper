@@ -1,9 +1,7 @@
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:lifekeeper/style.dart';
-import 'main_page.dart';
+import 'style.dart';
 import 'dart:async';
-import 'main.dart';
 import 'dart:math';
 
 class LifePad extends StatefulWidget {
