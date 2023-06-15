@@ -38,20 +38,15 @@ List<Color> colorsList = [
   Colors.white,
   Color.fromRGBO(110,142,36,1),
 
-  Colors.deepPurple,
-  const Color(0xff14453D),
+  Colors.purple,
+  Color.fromRGBO(0,112,88,1),
   Color.fromRGBO(146,73,39,1),
   const Color(0xff484743),
 
   Colors.teal,
-  Colors.pinkAccent,
-  Color.fromRGBO(4,85,40,1),
-  Colors.redAccent,
-
-  const Color(0xff413145),
   const Color(0xff16425B),
-  Color.fromRGBO(87,138,174,1),
-  Colors.purple,
+  Colors.pinkAccent,
+  Colors.deepPurple,
 ];
 
 Map<String, Color> colorMap = {
@@ -537,12 +532,18 @@ class _LifepadSectionState extends State<LifepadSection> {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        lifepadButton(
-                          (){
-                            widget.onClose();
-                          },
-                          iconColor: widget.color == Colors.white? Colors.black:Colors.white,
-                          icon: Icons.close,
+
+                        Row(
+                          children: [
+                            SizedBox(width: 5),
+                            lifepadButton(
+                              (){
+                                widget.onClose();
+                              },
+                              iconColor: widget.color == Colors.white? Colors.black:Colors.white,
+                              icon: Icons.close,
+                            ),
+                          ],
                         ),
                         Expanded(
                           child: Padding(
@@ -557,13 +558,18 @@ class _LifepadSectionState extends State<LifepadSection> {
                             ),
                           ),
                         ),
-                        lifepadButton(
-                          (){
-                            widget.onRandom();
-                          },
-                          icon: widget.title != "CHOOSE A COLOR" && widget.title != "ROLL A DICE"?
-                          MdiIcons.refresh:Icons.question_mark,
-                          iconColor: widget.color == Colors.white? Colors.black:Colors.white,
+                        Row(
+                          children: [
+                            lifepadButton(
+                              (){
+                                widget.onRandom();
+                              },
+                              icon: widget.title != "CHOOSE A COLOR" && widget.title != "ROLL A DICE"?
+                              MdiIcons.refresh:Icons.question_mark,
+                              iconColor: widget.color == Colors.white? Colors.black:Colors.white,
+                            ),
+                            SizedBox(width: 5),
+                          ],
                         ),
                       ],
                     );

@@ -139,37 +139,43 @@ class _LifePadState extends State<LifePad> {
     }
   }
 
-  Widget counterModifierButton({int num = 1, int idx = 0, String type = 'life'}){
-    void onPressed(){
-      setState(() {
-        if(type == "commander"){
-          widget.playersInfo['commander'][widget.id][idx] += num;
-          if(widget.playersInfo['commander'][widget.id][idx] < 0){
-            widget.playersInfo['commander'][widget.id][idx] = 0;
-          }
+  void onPressed({int num = 1, int idx = 0, String type = 'life'}){
+    setState(() {
+      if(type == "commander"){
+        widget.playersInfo['commander'][widget.id][idx] += num;
+        if(widget.playersInfo['commander'][widget.id][idx] < 0){
+          widget.playersInfo['commander'][widget.id][idx] = 0;
+        } else {
+          widget.playersInfo['life'][widget.id] += num*(-1);
         }
-        else {
-          widget.playersInfo[type][widget.id] += num;
+      }
+      else {
+        widget.playersInfo[type][widget.id] += num;
+        if(type == "infect"){
           if(widget.playersInfo['infect'][widget.id] < 0){
             widget.playersInfo['infect'][widget.id] = 0;
-          }
-
-          if(type == 'life') {
-            temporaryValue += num;
-          }
-          if(temporaryValue == 0){
-            opacityTemp = 0;
-          }
-          if(!isFirst && temporaryValue != 0){
-            opacityTemp = 1;
+          } else {
+            widget.playersInfo['life'][widget.id] += num*(-1);
           }
         }
 
-      });
-      lastClick = DateTime.now();
-      Future.delayed(Duration(seconds: delayCheck), checkLastClick);
-    }
+        if(type == 'life') {
+          temporaryValue += num;
+        }
+        if(temporaryValue == 0){
+          opacityTemp = 0;
+        }
+        if(!isFirst && temporaryValue != 0){
+          opacityTemp = 1;
+        }
+      }
 
+    });
+    lastClick = DateTime.now();
+    Future.delayed(Duration(seconds: delayCheck), checkLastClick);
+  }
+
+  Widget counterModifierButton({int num = 1, int idx = 0, String type = 'life'}){
     void onLongPress(){
       setState(() {
         widget.playersInfo['activeTemp'][widget.id] = true;
@@ -180,7 +186,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterAdd = Timer.periodic(
             const Duration(milliseconds: 100),
             (timer) {
-              onPressed();
+              onPressed(num: num,idx: idx,type: type);
               lastClick = DateTime.now();
               lastTemp =  DateTime.now();
               Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -191,7 +197,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterAddINF = Timer.periodic(
               const Duration(milliseconds: 100),
               (timer) {
-                onPressed();
+                onPressed(num: num,idx: idx,type: type);
                 lastClick = DateTime.now();
                 lastTemp =  DateTime.now();
                 Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -202,7 +208,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterAddENR = Timer.periodic(
               const Duration(milliseconds: 100),
               (timer) {
-                onPressed();
+                onPressed(num: num,idx: idx,type: type);
                 lastClick = DateTime.now();
                 lastTemp =  DateTime.now();
                 Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -213,7 +219,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterAddEXP = Timer.periodic(
               const Duration(milliseconds: 100),
               (timer) {
-                onPressed();
+                onPressed(num: num,idx: idx,type: type);
                 lastClick = DateTime.now();
                 lastTemp =  DateTime.now();
                 Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -224,7 +230,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterAddTRS = Timer.periodic(
               const Duration(milliseconds: 100),
               (timer) {
-                onPressed();
+                onPressed(num: num,idx: idx,type: type);
                 lastClick = DateTime.now();
                 lastTemp =  DateTime.now();
                 Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -235,7 +241,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterAddCMDT = Timer.periodic(
             const Duration(milliseconds: 100),
             (timer) {
-              onPressed();
+              onPressed(num: num,idx: idx,type: type);
               lastClick = DateTime.now();
               lastTemp =  DateTime.now();
               Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -248,7 +254,7 @@ class _LifePadState extends State<LifePad> {
               timeCounterAddCMD1 = Timer.periodic(
                 const Duration(milliseconds: 100),
                     (timer) {
-                  onPressed();
+                      onPressed(num: num,idx: idx,type: type);
                   lastClick = DateTime.now();
                   lastTemp =  DateTime.now();
                   Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -259,7 +265,7 @@ class _LifePadState extends State<LifePad> {
               timeCounterAddCMD2 = Timer.periodic(
                   const Duration(milliseconds: 100),
                   (timer) {
-                    onPressed();
+                    onPressed(num: num,idx: idx,type: type);
                     lastClick = DateTime.now();
                     lastTemp =  DateTime.now();
                     Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -270,7 +276,7 @@ class _LifePadState extends State<LifePad> {
               timeCounterAddCMD3 = Timer.periodic(
                   const Duration(milliseconds: 100),
                   (timer) {
-                    onPressed();
+                    onPressed(num: num,idx: idx,type: type);
                     lastClick = DateTime.now();
                     lastTemp =  DateTime.now();
                     Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -281,7 +287,7 @@ class _LifePadState extends State<LifePad> {
               timeCounterAddCMD4 = Timer.periodic(
                   const Duration(milliseconds: 100),
                       (timer) {
-                    onPressed();
+                        onPressed(num: num,idx: idx,type: type);
                     lastClick = DateTime.now();
                     lastTemp =  DateTime.now();
                     Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -292,7 +298,7 @@ class _LifePadState extends State<LifePad> {
               timeCounterAddCMD5 = Timer.periodic(
                   const Duration(milliseconds: 100),
                       (timer) {
-                    onPressed();
+                        onPressed(num: num,idx: idx,type: type);
                     lastClick = DateTime.now();
                     lastTemp =  DateTime.now();
                     Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -303,7 +309,7 @@ class _LifePadState extends State<LifePad> {
               timeCounterAddCMD6 = Timer.periodic(
                   const Duration(milliseconds: 100),
                       (timer) {
-                    onPressed();
+                        onPressed(num: num,idx: idx,type: type);
                     lastClick = DateTime.now();
                     lastTemp =  DateTime.now();
                     Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -321,7 +327,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterDec = Timer.periodic(
               const Duration(milliseconds: 100),
                   (timer) {
-                onPressed();
+                    onPressed(num: num,idx: idx,type: type);
                 lastClick = DateTime.now();
                 lastTemp =  DateTime.now();
                 Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -332,7 +338,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterDecINF = Timer.periodic(
               const Duration(milliseconds: 100),
                   (timer) {
-                onPressed();
+                    onPressed(num: num,idx: idx,type: type);
                 lastClick = DateTime.now();
                 lastTemp =  DateTime.now();
                 Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -343,7 +349,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterDecENR = Timer.periodic(
               const Duration(milliseconds: 100),
                   (timer) {
-                onPressed();
+                    onPressed(num: num,idx: idx,type: type);
                 lastClick = DateTime.now();
                 lastTemp =  DateTime.now();
                 Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -354,7 +360,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterDecEXP = Timer.periodic(
               const Duration(milliseconds: 100),
                   (timer) {
-                onPressed();
+                    onPressed(num: num,idx: idx,type: type);
                 lastClick = DateTime.now();
                 lastTemp =  DateTime.now();
                 Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -365,7 +371,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterDecTRS = Timer.periodic(
               const Duration(milliseconds: 100),
                   (timer) {
-                onPressed();
+                    onPressed(num: num,idx: idx,type: type);
                 lastClick = DateTime.now();
                 lastTemp =  DateTime.now();
                 Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -376,7 +382,7 @@ class _LifePadState extends State<LifePad> {
           timeCounterDecCMDT = Timer.periodic(
               const Duration(milliseconds: 100),
                   (timer) {
-                onPressed();
+                    onPressed(num: num,idx: idx,type: type);
                 lastClick = DateTime.now();
                 lastTemp =  DateTime.now();
                 Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -388,8 +394,8 @@ class _LifePadState extends State<LifePad> {
             case 1:
               timeCounterDecCMD1 = Timer.periodic(
                   const Duration(milliseconds: 100),
-                      (timer) {
-                    onPressed();
+                  (timer) {
+                    onPressed(num: num,idx: idx,type: type);
                     lastClick = DateTime.now();
                     lastTemp =  DateTime.now();
                     Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -400,7 +406,7 @@ class _LifePadState extends State<LifePad> {
               timeCounterDecCMD2 = Timer.periodic(
                   const Duration(milliseconds: 100),
                       (timer) {
-                    onPressed();
+                        onPressed(num: num,idx: idx,type: type);
                     lastClick = DateTime.now();
                     lastTemp =  DateTime.now();
                     Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -411,7 +417,7 @@ class _LifePadState extends State<LifePad> {
               timeCounterDecCMD3 = Timer.periodic(
                   const Duration(milliseconds: 100),
                       (timer) {
-                    onPressed();
+                        onPressed(num: num,idx: idx,type: type);
                     lastClick = DateTime.now();
                     lastTemp =  DateTime.now();
                     Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -422,7 +428,7 @@ class _LifePadState extends State<LifePad> {
               timeCounterDecCMD4 = Timer.periodic(
                   const Duration(milliseconds: 100),
                       (timer) {
-                    onPressed();
+                        onPressed(num: num,idx: idx,type: type);
                     lastClick = DateTime.now();
                     lastTemp =  DateTime.now();
                     Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -433,7 +439,7 @@ class _LifePadState extends State<LifePad> {
               timeCounterDecCMD5 = Timer.periodic(
                   const Duration(milliseconds: 100),
                       (timer) {
-                    onPressed();
+                        onPressed(num: num,idx: idx,type: type);
                     lastClick = DateTime.now();
                     lastTemp =  DateTime.now();
                     Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -444,7 +450,7 @@ class _LifePadState extends State<LifePad> {
               timeCounterDecCMD6 = Timer.periodic(
                   const Duration(milliseconds: 100),
                       (timer) {
-                    onPressed();
+                        onPressed(num: num,idx: idx,type: type);
                     lastClick = DateTime.now();
                     lastTemp =  DateTime.now();
                     Future.delayed(Duration(seconds: delayCheck), checkLastClick);
@@ -510,7 +516,9 @@ class _LifePadState extends State<LifePad> {
         onLongPressEnd: onLongEnd,
         child: RawMaterialButton(
           constraints: infinityBoxConstraints(),
-          onPressed: onPressed,
+          onPressed: (){
+            onPressed(num: num,idx: idx,type: type);
+          },
         ),
       ),
     );
@@ -1022,7 +1030,7 @@ class _LifePadState extends State<LifePad> {
 
   @override
   Widget build(BuildContext context) {
-    if(!widget.isPlaying){
+    if(!widget.isPlaying || widget.playersInfo['life'][widget.id] <= 0){
       timeCounterAdd.cancel();
       timeCounterDec.cancel();
     }
@@ -1151,6 +1159,24 @@ class _LifePadState extends State<LifePad> {
                   crossAxisCount: 3,
                   children: List.generate(widget.numberOfPlayers, (index) => commanderButton(idx: index+1)),
                 ),
+
+                if(widget.playersInfo['life'][widget.id] <= 0)
+                  GestureDetector(
+                    onTap: onPressed,
+                    child: Container(
+                      height: double.infinity,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: widget.color,
+                      ),
+                      child: ResponsiveIcon(
+                        color: widget.color == Colors.white? Colors.black.withOpacity(0.16):Colors.white30,
+                        icon: MdiIcons.skullOutline,
+                        multi: 0.8,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
