@@ -154,8 +154,6 @@ class _LifePadState extends State<LifePad> {
         if(type == "infect"){
           if(widget.playersInfo['infect'][widget.id] < 0){
             widget.playersInfo['infect'][widget.id] = 0;
-          } else {
-            widget.playersInfo['life'][widget.id] += num*(-1);
           }
         }
 
@@ -1033,6 +1031,7 @@ class _LifePadState extends State<LifePad> {
     if(!widget.isPlaying || widget.playersInfo['life'][widget.id] <= 0){
       timeCounterAdd.cancel();
       timeCounterDec.cancel();
+      widget.playersInfo["activeTemp"][widget.id] = false;
     }
     return Expanded(
       child: RotatedBox(
