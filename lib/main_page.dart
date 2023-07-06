@@ -44,7 +44,7 @@ class _MainPageState extends State<MainPage> {
 
   late int last;
   Future<void> rollDicePlus(int idx,int max) async {
-    for(int i = 0; i < 50; i++){
+    for(int i = 0; i < 125; i++){
       if(i != 0){
         await Future.delayed(const Duration(milliseconds: 5));
       }
