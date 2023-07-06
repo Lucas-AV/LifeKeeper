@@ -670,14 +670,15 @@ class _MainPageState extends State<MainPage> {
                       duration: Duration(milliseconds: menuViewMode == "life"?450:100),
                       opacity: menuViewMode == "life"? 1:0,
                       child: Center(
-                        child: SizedBox(
-                          child: ListWheelScrollView.useDelegate(
-                            itemExtent: 28,
-                            diameterRatio: 1.5,
-                            perspective: 0.01,
-                            physics: const FixedExtentScrollPhysics(),
-                            controller: lifeController,
-                            childDelegate: ListWheelChildBuilderDelegate(
+                        child: LayoutBuilder(
+                          builder: (context,constraints){
+                            return ListWheelScrollView.useDelegate(
+                              itemExtent: constraints.maxWidth*0.35,
+                              diameterRatio: 1.5,
+                              perspective: 0.01,
+                              physics: const FixedExtentScrollPhysics(),
+                              controller: lifeController,
+                              childDelegate: ListWheelChildBuilderDelegate(
                                 childCount: 1000,
                                 builder: (context, index) {
                                   return Text(
@@ -686,20 +687,21 @@ class _MainPageState extends State<MainPage> {
                                       color: Colors.black.withOpacity(0.5),
                                       shadows: const [Shadow(color: Colors.black, blurRadius: 1)],
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 26
+                                      fontSize: constraints.maxWidth*0.3
                                     ),
                                   );
                                 }
-                            ),
-                            onSelectedItemChanged: (value) {
-                              setState(() {
-                                widget.base = value;
-                                for(int index = 0; index < maxPlayers+1;index++){
-                                  widget.playersInfo['life'][index] = value;
-                                }
-                              });
-                            },
-                          ),
+                              ),
+                              onSelectedItemChanged: (value) {
+                                setState(() {
+                                  widget.base = value;
+                                  for(int index = 0; index < maxPlayers+1;index++){
+                                    widget.playersInfo['life'][index] = value;
+                                  }
+                                });
+                              },
+                            );
+                          }
                         ),
                       ),
                     ),
