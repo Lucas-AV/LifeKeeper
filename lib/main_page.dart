@@ -783,20 +783,20 @@ class _MainPageState extends State<MainPage> {
               widget.isPlaying?
                 Visibility(
                 visible: centerButtonClicked,
-                child: GestureDetector(
-                  onTap: (){
-                    setState(() {
-                      centerButtonClicked = false;
-                      menuViewMode = "main";
-                    });
-                  },
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 100),
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    color: Colors.black54,
+                  child: GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        centerButtonClicked = false;
+                        menuViewMode = "main";
+                      });
+                    },
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 100),
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      color: Colors.black54,
+                    ),
                   ),
-                ),
               ) :
                 RawMaterialButton(
                   onPressed: (){

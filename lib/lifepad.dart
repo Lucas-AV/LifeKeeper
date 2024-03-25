@@ -64,16 +64,12 @@ class _LifePadState extends State<LifePad> {
 
   void start() async {
     await Future.delayed(Duration(milliseconds: 100));
-    if (mounted) { // Check if the widget is still mounted
+    if (mounted) {
       setState(() {
         isFirst = widget.id == widget.playersInfo['starter'];
       });
       Future.delayed(Duration(seconds: 2),(){
-        if (mounted) { // Check if the widget is still mounted
-          setState(() {
-            isFirst = false;
-          });
-        }
+        if (mounted) setState(() => isFirst = false);
       });
     }
   }
@@ -83,9 +79,7 @@ class _LifePadState extends State<LifePad> {
   void initState(){
     super.initState();
     timeCounterLife.cancel();
-    if(widget.isPlaying){
-      start();
-    }
+    if(widget.isPlaying) start();
   }
 
 
@@ -158,28 +152,22 @@ class _LifePadState extends State<LifePad> {
         widget.playersInfo['activeTemp'][widget.id] = true;
       });
 
-      if(type == 'life'){
-        if(!timeCounterLife.isActive) {
-          timeCounterLife = Timer.periodic(
-            const Duration(milliseconds: 100),
-            changeValue,
-          );
-        }
-      }
-      else if(type == "commander"){
-        if(!timeCounterCMD[idx].isActive){
-          timeCounterCMD[idx] = Timer.periodic(
-            const Duration(milliseconds: 100),
-            changeValue
-          );
-        }
-      }
-      else{
-        if(timeCounterMisc[type]!.isActive){
-          timeCounterMisc[type] = Timer.periodic(
-            const Duration(milliseconds: 100),
-            changeValue
-          );
+      if(isAllCountersOff()){
+        Timer periodicValue = Timer.periodic(
+          const Duration(milliseconds: 100),
+          changeValue,
+        );
+
+        switch(type){
+          case 'life':
+            timeCounterLife = periodicValue;
+            break;
+          case 'commander':
+            timeCounterCMD[idx] = periodicValue;
+            break;
+          default:
+            timeCounterMisc[type] = periodicValue;
+            break;
         }
       }
     }
