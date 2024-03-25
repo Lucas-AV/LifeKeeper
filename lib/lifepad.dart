@@ -129,23 +129,18 @@ class _LifePadState extends State<LifePad> {
       }
       else {
         widget.playersInfo[type][widget.id] += num;
-        if(type == "infect"){
-          if(widget.playersInfo['infect'][widget.id] < 0){
-            widget.playersInfo['infect'][widget.id] = 0;
+        if(timeCounterMisc.keys.contains(type)){
+          if(widget.playersInfo[type][widget.id] < 0){
+            widget.playersInfo[type][widget.id] = 0;
           }
         }
 
-        if(type == 'life') {
-          temporaryValue += num;
-        }
-        if(temporaryValue == 0){
-          opacityTemp = 0;
-        }
-        if(!isFirst && temporaryValue != 0){
-          opacityTemp = 1;
-        }
+        if(type == 'life') temporaryValue += num;
+        if(temporaryValue == 0) opacityTemp = 0;
+        if(!isFirst && temporaryValue != 0) opacityTemp = 1;
       }
     });
+
     lastClick = DateTime.now();
     lastTemp = DateTime.now();
     Future.delayed(Duration(seconds: delayCheck),checkLastClick);
