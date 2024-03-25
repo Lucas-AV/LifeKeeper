@@ -146,7 +146,7 @@ class _LifePadState extends State<LifePad> {
   }
 
   Widget counterModifierButton({int num = 1, int idx = 0, String type = 'life'}){
-    void changeValue(timer) => onPressed(num: num,idx: idx,type: type);
+    void changeValue(timer) => onPressed(num: num, idx: idx, type: type);
     void onLongPress(){
       setState(() {
         widget.playersInfo['activeTemp'][widget.id] = true;
@@ -195,11 +195,11 @@ class _LifePadState extends State<LifePad> {
     );
   }
 
-  Widget modifierColumn(){
+  Widget modifierColumn({int idx = 0, String type = 'life'}){
     return Column(
       children: [
-        counterModifierButton(num: 1),
-        counterModifierButton(num: -1),
+        counterModifierButton(num: 1,idx: idx, type: type),
+        counterModifierButton(num: -1, idx: idx, type: type),
       ],
     );
   }
@@ -520,12 +520,7 @@ class _LifePadState extends State<LifePad> {
                 ],
               ),
             ),
-            Column(
-              children: [
-                counterModifierButton(num: 1,idx: widget.id,type: type),
-                counterModifierButton(num: -1,idx: widget.id,type: type),
-              ],
-            ),
+            modifierColumn(idx: widget.id,type: type),
           ],
         ),
       ),
@@ -656,12 +651,7 @@ class _LifePadState extends State<LifePad> {
                 )
               ],
             ),
-            Column(
-              children: [
-                counterModifierButton(num: 1,idx: idx,type: "commander"),
-                counterModifierButton(num: -1,idx: idx,type: "commander"),
-              ],
-            ),
+            modifierColumn(idx: idx,type: "commander"),
           ],
         ),
       ),
@@ -779,11 +769,11 @@ class _LifePadState extends State<LifePad> {
                     changeViewMode(viewMode == "tokensEdit", "detailed", "tokensEdit");
                   },
                   onRandom: (){
-                    setState(() {
+                    setState(() =>
                       countersList.forEach((element) {
                         widget.playersInfo[element][widget.id] = 0;
-                      });
-                    });
+                      })
+                    );
                   },
                   visible: viewMode == "tokensEdit",
                   color: widget.color,
