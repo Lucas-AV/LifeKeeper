@@ -64,15 +64,20 @@ class _LifePadState extends State<LifePad> {
 
   void start() async {
     await Future.delayed(Duration(milliseconds: 100));
-    setState(() {
-      isFirst = widget.id == widget.playersInfo['starter'];
-    });
-    Future.delayed(Duration(seconds: 2),(){
+    if (mounted) { // Check if the widget is still mounted
       setState(() {
-        isFirst = false;
+        isFirst = widget.id == widget.playersInfo['starter'];
       });
-    });
+      Future.delayed(Duration(seconds: 2),(){
+        if (mounted) { // Check if the widget is still mounted
+          setState(() {
+            isFirst = false;
+          });
+        }
+      });
+    }
   }
+
 
   @override
   void initState(){
