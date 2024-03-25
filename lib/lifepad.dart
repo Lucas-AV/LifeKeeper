@@ -147,28 +147,35 @@ class _LifePadState extends State<LifePad> {
   }
 
   Widget counterModifierButton({int num = 1, int idx = 0, String type = 'life'}){
+    void changeValue(timer) => onPressed(num: num,idx: idx,type: type);
     void onLongPress(){
       setState(() {
         widget.playersInfo['activeTemp'][widget.id] = true;
       });
 
       if(type == 'life'){
-        timeCounterLife = Timer.periodic(
-          const Duration(milliseconds: 100),
-          (timer) => onPressed(num: num,idx: idx,type: type)
-        );
+        if(!timeCounterLife.isActive) {
+          timeCounterLife = Timer.periodic(
+            const Duration(milliseconds: 100),
+            changeValue,
+          );
+        }
       }
       else if(type == "commander"){
-        timeCounterCMD[idx] = Timer.periodic(
-         const Duration(milliseconds: 100),
-          (timer) => onPressed(num: num,idx: idx,type: type)
-        );
+        if(!timeCounterCMD[idx].isActive){
+          timeCounterCMD[idx] = Timer.periodic(
+            const Duration(milliseconds: 100),
+            changeValue
+          );
+        }
       }
       else{
-        timeCounterMisc[type] = Timer.periodic(
-          const Duration(milliseconds: 100),
-          (timer) => onPressed(num: num,idx: idx,type: type)
-        );
+        if(timeCounterMisc[type]!.isActive){
+          timeCounterMisc[type] = Timer.periodic(
+            const Duration(milliseconds: 100),
+            changeValue
+          );
+        }
       }
     }
 
@@ -178,7 +185,7 @@ class _LifePadState extends State<LifePad> {
       });
       timeCounterLife.cancel();
       timeCounterCMD[idx].cancel();
-      timeCounterMisc[type]!.cancel();
+      timeCounterMisc[type]?.cancel();
     }
 
     return Expanded(
@@ -248,7 +255,7 @@ class _LifePadState extends State<LifePad> {
       for(var i in widget.playersInfo['commander'][widget.id]){
         if(i > bigger){
           bigger = i;
-          // miniColor = widget.playersInfo['colors'][idx-1];
+          miniColor = widget.playersInfo['colors'][idx-1];
         }
         idx++;
       }
@@ -301,7 +308,7 @@ class _LifePadState extends State<LifePad> {
                         width: 15,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(100),
-                            color: miniColor.withOpacity(0.5),
+                            color: miniColor.withOpacity(0.85),
                             boxShadow:[
                               BoxShadow(
                                   color: Colors.black26,
@@ -309,7 +316,7 @@ class _LifePadState extends State<LifePad> {
                                   offset: Offset(0,3)
                               ),
                               BoxShadow(
-                                color: widget.color,
+                                color: miniColor,
                                 blurRadius: 1,
                               ),
                             ]
@@ -328,9 +335,7 @@ class _LifePadState extends State<LifePad> {
           ),
           if(!allIsZero)
             GestureDetector(
-              onTap: (){
-                changeViewMode(viewMode == "commander","detailed","commander");
-              },
+              onTap: () => changeViewMode(viewMode == "commander","detailed","commander"),
               child: SizedBox(width: 4)
             ),
         ],
