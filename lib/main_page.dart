@@ -81,7 +81,9 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     FixedExtentScrollController lifeController = FixedExtentScrollController(initialItem: widget.base);
-
+    bool heightBiggerThanWidth() => MediaQuery.of(context).size.height >= MediaQuery.of(context).size.width;
+    double maxWid = MediaQuery.of(context).size.width;
+    double maxHei = MediaQuery.of(context).size.height;
     Column buildLifepadMatt(){
       List<Widget> lifepadMatt = [];
       if(widget.numberOfPlayers > 2 && widget.numberOfPlayers % 2 == 0){
@@ -334,139 +336,86 @@ class _MainPageState extends State<MainPage> {
     }
 
     Widget centerButton(){
-      return SizedBox(
-        height: maxSize,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            // MAIN
-            AnimatedContainer(
-              duration: Duration(milliseconds: 100),
-              height: centerButtonClicked? maxSize*.5:0,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white38,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.white,
-                    blurRadius: 1
-                  ),
-                ],
-              ),
-              child: Visibility(
-                visible: centerButtonClicked,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          CenterMenuIconButton(
-                            onPressed: () => resetPage(),
-                            icon: MdiIcons.refresh,
-                            color: Colors.black,
-                          ),
-                          CenterMenuIconButton(
-                            onPressed: () => changeViewMode("players"),
-                            icon: MdiIcons.accountGroup,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      width: maxSize*1.1,
-                      height: 40,
-                    ),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          CenterMenuIconButton(
-                            onPressed: () => changeViewMode("life"),
-                            icon: MdiIcons.heartCog,
-                            color: Colors.black,
-                          ),
-                          CenterMenuIconButton(
-                            onPressed: () => changeViewMode("dices"),
-                            icon: MdiIcons.diceMultiple,
-                            color: Colors.black,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+      double biggerSide = heightBiggerThanWidth()? maxHei:maxWid;
+      double smallerSide = heightBiggerThanWidth()? maxWid : maxHei;
+      double bottomPosition = (widget.numberOfPlayers <= 4? biggerSide/2 : biggerSide/3) - maxSize/2;
+      return Visibility(
+        visible: widget.isPlaying,
+        child: Positioned(
+          bottom: bottomPosition,
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: smallerSide,
+              minHeight: maxSize
             ),
-
-            // PLAYERS
-            AnimatedContainer(
-              duration: Duration(milliseconds: 1),
-              width: double.infinity,
-              height: menuViewMode == "players" && centerButtonClicked? maxSize*.5:0,
-              decoration: BoxDecoration(
-                color: Colors.white38,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.white,
-                    blurRadius: 1
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5,
-                  (index) => swapPlayerNum([2,3,4,5,6][index]))
-                    ..insert(2, SizedBox(
-                      width: maxSize*1.1,
-                      height: 40,
-                    )
-                  )
-                  ..insert(0, CenterMenuIconButton(
-                    onPressed: () => setState(() => menuViewMode = "menu"),
-                    icon: MdiIcons.arrowLeftBold,
-                    color: Colors.black,
-                  ),
-                )
-              ),
-            ),
-
-            // DICES
-            AnimatedContainer(
-              duration: Duration(milliseconds: 1),
-              width: double.infinity,
-              height: menuViewMode == "dices" && centerButtonClicked? maxSize*.5:0,
-              decoration: BoxDecoration(
-                color: Colors.white38,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.white,
-                    blurRadius: 1
-                  ),
-                ],
-              ),
-              child: Expanded(
-                child: Row(
-                  children: List.generate(6,
-                    (index) => chooseDiceToRoll([4,6,8,10,12,20][index]))
-                    ..insert(0, CenterMenuIconButton(
-                      onPressed: () => setState(() => menuViewMode = "menu"),
-                      icon: MdiIcons.arrowLeftBold,
-                      color: Colors.black,
-                    )
-                  )
-                ),
-              ),
-            ),
-
-            // Life
-            Stack(
+            child: Stack(
               alignment: Alignment.center,
               children: [
+                // MAIN
+                AnimatedContainer(
+                  duration: Duration(milliseconds: 100),
+                  height: centerButtonClicked? maxSize*.5:0,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white38,
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.white,
+                          blurRadius: 1
+                      ),
+                    ],
+                  ),
+                  child: Visibility(
+                    visible: centerButtonClicked,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              CenterMenuIconButton(
+                                onPressed: () => resetPage(),
+                                icon: MdiIcons.refresh,
+                                color: Colors.black,
+                              ),
+                              CenterMenuIconButton(
+                                onPressed: () => changeViewMode("players"),
+                                icon: MdiIcons.accountGroup,
+                                color: Colors.black,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: maxSize*1.1,
+                          height: 40,
+                        ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              CenterMenuIconButton(
+                                onPressed: () => changeViewMode("life"),
+                                icon: MdiIcons.heartCog,
+                                color: Colors.black,
+                              ),
+                              CenterMenuIconButton(
+                                onPressed: () => changeViewMode("dices"),
+                                icon: MdiIcons.diceMultiple,
+                                color: Colors.black,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // PLAYERS
                 AnimatedContainer(
                   duration: Duration(milliseconds: 1),
                   width: double.infinity,
-                  height: menuViewMode == "life" && centerButtonClicked? maxSize*.5:0,
+                  height: menuViewMode == "players" && centerButtonClicked? maxSize*.5:0,
                   decoration: BoxDecoration(
                     color: Colors.white38,
                     boxShadow: [
@@ -479,7 +428,7 @@ class _MainPageState extends State<MainPage> {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(5,
-                              (index) => swapLife([20,30,40,50,60][index]))
+                              (index) => swapPlayerNum([2,3,4,5,6][index]))
                         ..insert(2, SizedBox(
                           width: maxSize*1.1,
                           height: 40,
@@ -493,121 +442,186 @@ class _MainPageState extends State<MainPage> {
                         )
                   ),
                 ),
+
+                // DICES
                 AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  height: menuViewMode == "life"?  maxSize:0,
-                  width: menuViewMode == "life"?  maxSize:0,
+                  duration: Duration(milliseconds: 1),
+                  width: double.infinity,
+                  height: menuViewMode == "dices" && centerButtonClicked? maxSize*.5:0,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: (Colors.white).withOpacity(0.5),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black38,
-                          blurRadius: 10,
-                          offset: Offset(0, 10)
-                        ),
-                        BoxShadow(
+                    color: Colors.white38,
+                    boxShadow: [
+                      BoxShadow(
                           color: Colors.white,
                           blurRadius: 1
-                        ),
-                      ]
+                      ),
+                    ],
+                  ),
+                  child: Expanded(
+                    child: Row(
+                        children: List.generate(6,
+                                (index) => chooseDiceToRoll([4,6,8,10,12,20][index]))
+                          ..insert(0, CenterMenuIconButton(
+                            onPressed: () => setState(() => menuViewMode = "menu"),
+                            icon: MdiIcons.arrowLeftBold,
+                            color: Colors.black,
+                          )
+                          )
+                    ),
                   ),
                 ),
-                Visibility(
-                  visible: menuViewMode == "life",
-                  child: SizedBox(
-                    height: maxSize,
-                    width: maxSize,
-                    child: AnimatedOpacity(
-                      duration: Duration(milliseconds: menuViewMode == "life"?450:100),
-                      opacity: menuViewMode == "life"? 1:0,
-                      child: Center(
-                        child: LayoutBuilder(
-                          builder: (context,constraints){
-                            return ListWheelScrollView.useDelegate(
-                              itemExtent: constraints.maxWidth*0.35,
-                              diameterRatio: 1.5,
-                              perspective: 0.01,
-                              physics: const FixedExtentScrollPhysics(),
-                              controller: lifeController,
-                              childDelegate: ListWheelChildBuilderDelegate(
-                                childCount: 1000,
-                                builder: (context, index) {
-                                  return Text(
-                                    "$index",
-                                    style: TextStyle(
-                                      color: Colors.black.withOpacity(0.5),
-                                      shadows: const [Shadow(color: Colors.black, blurRadius: 1)],
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: constraints.maxWidth*0.3
+
+                // Life
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 1),
+                      width: double.infinity,
+                      height: menuViewMode == "life" && centerButtonClicked? maxSize*.5:0,
+                      decoration: BoxDecoration(
+                        color: Colors.white38,
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.white,
+                              blurRadius: 1
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(5,
+                                  (index) => swapLife([20,30,40,50,60][index]))
+                            ..insert(2, SizedBox(
+                              width: maxSize*1.1,
+                              height: 40,
+                            )
+                            )
+                            ..insert(0, CenterMenuIconButton(
+                              onPressed: () => setState(() => menuViewMode = "menu"),
+                              icon: MdiIcons.arrowLeftBold,
+                              color: Colors.black,
+                            ),
+                            )
+                      ),
+                    ),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      height: menuViewMode == "life"?  maxSize:0,
+                      width: menuViewMode == "life"?  maxSize:0,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: (Colors.white).withOpacity(0.5),
+                          boxShadow: const [
+                            BoxShadow(
+                                color: Colors.black38,
+                                blurRadius: 10,
+                                offset: Offset(0, 10)
+                            ),
+                            BoxShadow(
+                                color: Colors.white,
+                                blurRadius: 1
+                            ),
+                          ]
+                      ),
+                    ),
+                    Visibility(
+                      visible: menuViewMode == "life",
+                      child: SizedBox(
+                        height: maxSize,
+                        width: maxSize,
+                        child: AnimatedOpacity(
+                          duration: Duration(milliseconds: menuViewMode == "life"?450:100),
+                          opacity: menuViewMode == "life"? 1:0,
+                          child: Center(
+                            child: LayoutBuilder(
+                                builder: (context,constraints){
+                                  return ListWheelScrollView.useDelegate(
+                                    itemExtent: constraints.maxWidth*0.35,
+                                    diameterRatio: 1.5,
+                                    perspective: 0.01,
+                                    physics: const FixedExtentScrollPhysics(),
+                                    controller: lifeController,
+                                    childDelegate: ListWheelChildBuilderDelegate(
+                                        childCount: 1000,
+                                        builder: (context, index) {
+                                          return Text(
+                                            "$index",
+                                            style: TextStyle(
+                                                color: Colors.black.withOpacity(0.5),
+                                                shadows: const [Shadow(color: Colors.black, blurRadius: 1)],
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: constraints.maxWidth*0.3
+                                            ),
+                                          );
+                                        }
                                     ),
+                                    onSelectedItemChanged: (value) {
+                                      setState(() {
+                                        widget.base = value;
+                                        for(int index = 0; index < maxPlayers+1;index++){
+                                          widget.playersInfo['life'][index] = value;
+                                        }
+                                      });
+                                    },
                                   );
                                 }
-                              ),
-                              onSelectedItemChanged: (value) {
-                                setState(() {
-                                  widget.base = value;
-                                  for(int index = 0; index < maxPlayers+1;index++){
-                                    widget.playersInfo['life'][index] = value;
-                                  }
-                                });
-                              },
-                            );
-                          }
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
+                ),
+
+                // BUTTON
+                AnimatedContainer(
+                    duration: Duration(milliseconds: 100),
+                    height: centerButtonClicked?
+                    menuViewMode == "dices" || menuViewMode == "life"? 0:maxSize:40,
+                    width: centerButtonClicked?
+                    menuViewMode == "dices" || menuViewMode == "life"? 0:maxSize:40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      color: centerButtonClicked?Colors.white38:Colors.black38,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black38,
+                          blurRadius: centerButtonClicked?3:0,
+                        ),
+                        BoxShadow(
+                            color: centerButtonClicked?Colors.white:Colors.black,
+                            blurRadius: 1.1
+                        ),
+                      ],
+                    ),
+                    child: GestureDetector(
+                        onTap: (){
+                          setState(() {
+                            if(widget.playersInfo["activeTemp"].every((element) => element == false)){
+                              centerButtonClicked = centerButtonClicked? false:true;
+                              menuViewMode = "main";
+                            }
+                            // widget.numberOfPlayers++;
+                            // if(widget.numberOfPlayers > 6){
+                            //   widget.numberOfPlayers = 2;
+                            // }
+                          });
+                        },
+                        child: LayoutBuilder(
+                          builder: (context,constraints){
+                            return Icon(
+                              MdiIcons.cubeOutline,
+                              color: centerButtonClicked?Colors.black:Colors.white,
+                              size: constraints.maxWidth* (centerButtonClicked? 0.8:0.75),
+                            );
+                          },
+                        )
+                    )
                 ),
               ],
             ),
-
-            // BUTTON
-            AnimatedContainer(
-                duration: Duration(milliseconds: 100),
-                height: centerButtonClicked?
-                menuViewMode == "dices" || menuViewMode == "life"? 0:maxSize:40,
-                width: centerButtonClicked?
-                menuViewMode == "dices" || menuViewMode == "life"? 0:maxSize:40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  color: centerButtonClicked?Colors.white38:Colors.black38,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black38,
-                      blurRadius: centerButtonClicked?3:0,
-                    ),
-                    BoxShadow(
-                        color: centerButtonClicked?Colors.white:Colors.black,
-                        blurRadius: 1.1
-                    ),
-                  ],
-                ),
-                child: GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        if(widget.playersInfo["activeTemp"].every((element) => element == false)){
-                          centerButtonClicked = centerButtonClicked? false:true;
-                          menuViewMode = "main";
-                        }
-                        // widget.numberOfPlayers++;
-                        // if(widget.numberOfPlayers > 6){
-                        //   widget.numberOfPlayers = 2;
-                        // }
-                      });
-                    },
-                    child: LayoutBuilder(
-                      builder: (context,constraints){
-                        return Icon(
-                          MdiIcons.cubeOutline,
-                          color: centerButtonClicked?Colors.black:Colors.white,
-                          size: constraints.maxWidth* (centerButtonClicked? 0.8:0.75),
-                        );
-                      },
-                    )
-                )
-            ),
-          ],
+          ),
         ),
       );
     }
@@ -615,47 +629,35 @@ class _MainPageState extends State<MainPage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: Stack(
-          alignment: Alignment.center,
-          children: [
-            buildLifepadMatt(),
-            RawMaterialButton(
-              constraints: centerButtonClicked || !widget.isPlaying?
-              BoxConstraints.expand() :
-              BoxConstraints.expand(width: 0,height: 0),
-              onPressed: (){
-                if(widget.isPlaying){
-                  setState(() {
-                    centerButtonClicked = false;
-                    menuViewMode = "main";
-                  });
-                } else {
-                  setState(() => play = true);
-                  Navigator.pop(context);
-                }
-              },
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 100),
-                color: widget.isPlaying? Colors.black54:Colors.transparent,
+        body: RotatedBox(
+          quarterTurns: heightBiggerThanWidth()? 0:3,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              buildLifepadMatt(),
+              RawMaterialButton(
+                constraints: centerButtonClicked || !widget.isPlaying?
+                BoxConstraints.expand() :
+                BoxConstraints.expand(width: 0,height: 0),
+                onPressed: (){
+                  if(widget.isPlaying){
+                    setState(() {
+                      centerButtonClicked = false;
+                      menuViewMode = "main";
+                    });
+                  } else {
+                    setState(() => play = true);
+                    Navigator.pop(context);
+                  }
+                },
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 100),
+                  color: widget.isPlaying? Colors.black54:Colors.transparent,
+                ),
               ),
-            ),
-
-            if(widget.isPlaying)
-              widget.numberOfPlayers % 4 == 0 || widget.numberOfPlayers < 5?
-              centerButton() : Column(
-                children: [
-                  Expanded(
-                    flex: 13,
-                    child: SizedBox(),
-                  ),
-                  centerButton(),
-                  Expanded(
-                    flex: 6,
-                    child: SizedBox(),
-                  )
-                ],
-              )
-          ],
+              centerButton()
+            ],
+          ),
         ),
       ),
     );
