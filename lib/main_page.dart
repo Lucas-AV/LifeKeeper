@@ -6,16 +6,6 @@ import 'style.dart';
 import 'dart:async';
 import 'dart:math';
 
-class CenterButton extends StatelessWidget {
-  const CenterButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
-
 class MainPage extends StatefulWidget {
   MainPage({Key? key, this.diceValue = 20,this.isPlaying = true, this.numberOfPlayers = 2, this.base = 40, this.passiveColors = const [], required this.playersInfo}) : super(key: key);
   int numberOfPlayers;
@@ -84,39 +74,34 @@ class _MainPageState extends State<MainPage> {
     bool heightBiggerThanWidth() => MediaQuery.of(context).size.height >= MediaQuery.of(context).size.width;
     double maxWid = MediaQuery.of(context).size.width;
     double maxHei = MediaQuery.of(context).size.height;
+    double biggerSide = heightBiggerThanWidth()? maxHei:maxWid;
+    double smallerSide = heightBiggerThanWidth()? maxWid : maxHei;
+    double bottomPosition = (widget.numberOfPlayers <= 4? biggerSide/2 : biggerSide/3) - maxSize/2;
+
+
+
     Column buildLifepadMatt(){
+      List<Widget> listPadGenerator(length) => List.generate(length~/2, (index) => Expanded(
+        child: Row(
+          children: List.generate(2, (jIndex) => LifePad(
+            quarterTurns: jIndex == 0? 1:3,
+            numberOfPlayers: widget.numberOfPlayers,
+            color: widget.playersInfo['colors'][jIndex + index * 2],
+            id: jIndex + index * 2 + 1,
+            base: widget.base,
+            playersInfo: widget.playersInfo,
+            isPlaying: widget.isPlaying,
+          ))
+        )
+      ));
       List<Widget> lifepadMatt = [];
+      
       if(widget.numberOfPlayers > 2 && widget.numberOfPlayers % 2 == 0){
-        lifepadMatt = List.generate(widget.numberOfPlayers~/2, (index) => Expanded(
-          child: Row(
-            children: List.generate(2, (jIndex) => LifePad(
-              quarterTurns: jIndex == 0? 1:3,
-              numberOfPlayers: widget.numberOfPlayers,
-              color: widget.playersInfo['colors'][jIndex + index * 2 + 1-1],
-              id: jIndex + index * 2 + 1,
-              base: widget.base,
-              playersInfo: widget.playersInfo,
-              isPlaying: widget.isPlaying,
-            ))
-          )
-        ));
+        lifepadMatt = listPadGenerator(widget.numberOfPlayers);
       }
       else if(widget.numberOfPlayers % 2 != 0){
-        lifepadMatt = List.generate((widget.numberOfPlayers - widget.numberOfPlayers%2)~/2,
-          (index) => Expanded(
-            child: Row(
-              children: List.generate(2, (jIndex) => LifePad(
-                quarterTurns: jIndex == 0? 1:3,
-                numberOfPlayers: widget.numberOfPlayers,
-                color: widget.playersInfo['colors'][jIndex + index * 2 + 1-1],
-                id: jIndex + index * 2 + 1,
-                base: widget.base,
-                playersInfo: widget.playersInfo,
-                isPlaying: widget.isPlaying,
-              ))
-            ),
-          ),
-        )..add(LifePad(
+        lifepadMatt = listPadGenerator(widget.numberOfPlayers - widget.numberOfPlayers%2)
+          ..add(LifePad(
             numberOfPlayers: widget.numberOfPlayers,
             quarterTurns: 0,
             color: widget.playersInfo['colors'][widget.numberOfPlayers-1],
@@ -124,7 +109,8 @@ class _MainPageState extends State<MainPage> {
             base: widget.base,
             playersInfo: widget.playersInfo,
             isPlaying: widget.isPlaying,
-          ));
+          )
+        );
       }
       else {
         lifepadMatt = List.generate(widget.numberOfPlayers,
@@ -336,10 +322,7 @@ class _MainPageState extends State<MainPage> {
     }
 
     Widget centerButton(){
-      double biggerSide = heightBiggerThanWidth()? maxHei:maxWid;
-      double smallerSide = heightBiggerThanWidth()? maxWid : maxHei;
-      double bottomPosition = (widget.numberOfPlayers <= 4? biggerSide/2 : biggerSide/3) - maxSize/2;
-      return Visibility(
+     return Visibility(
         visible: widget.isPlaying,
         child: Positioned(
           bottom: bottomPosition,
@@ -602,10 +585,6 @@ class _MainPageState extends State<MainPage> {
                               centerButtonClicked = centerButtonClicked? false:true;
                               menuViewMode = "main";
                             }
-                            // widget.numberOfPlayers++;
-                            // if(widget.numberOfPlayers > 6){
-                            //   widget.numberOfPlayers = 2;
-                            // }
                           });
                         },
                         child: LayoutBuilder(
