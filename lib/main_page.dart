@@ -78,8 +78,6 @@ class _MainPageState extends State<MainPage> {
     double smallerSide = heightBiggerThanWidth()? maxWid : maxHei;
     double bottomPosition = (widget.numberOfPlayers <= 4? biggerSide/2 : biggerSide/3) - maxSize/2;
 
-
-
     Column buildLifepadMatt(){
       List<Widget> listPadGenerator(length) => List.generate(length~/2, (index) => Expanded(
         child: Row(
@@ -95,24 +93,8 @@ class _MainPageState extends State<MainPage> {
         )
       ));
       List<Widget> lifepadMatt = [];
-      
-      if(widget.numberOfPlayers > 2 && widget.numberOfPlayers % 2 == 0){
-        lifepadMatt = listPadGenerator(widget.numberOfPlayers);
-      }
-      else if(widget.numberOfPlayers % 2 != 0){
-        lifepadMatt = listPadGenerator(widget.numberOfPlayers - widget.numberOfPlayers%2)
-          ..add(LifePad(
-            numberOfPlayers: widget.numberOfPlayers,
-            quarterTurns: 0,
-            color: widget.playersInfo['colors'][widget.numberOfPlayers-1],
-            id: widget.numberOfPlayers,
-            base: widget.base,
-            playersInfo: widget.playersInfo,
-            isPlaying: widget.isPlaying,
-          )
-        );
-      }
-      else {
+
+      if(widget.numberOfPlayers == 2){
         lifepadMatt = List.generate(widget.numberOfPlayers,
           (index) => LifePad(
             numberOfPlayers: widget.numberOfPlayers,
@@ -122,6 +104,22 @@ class _MainPageState extends State<MainPage> {
             isPlaying: widget.isPlaying,
             base: widget.base,
             id: index,
+          )
+        );
+      }
+      else if(widget.numberOfPlayers % 2 == 0){
+        lifepadMatt = listPadGenerator(widget.numberOfPlayers);
+      }
+      else {
+        lifepadMatt = listPadGenerator(widget.numberOfPlayers - widget.numberOfPlayers%2)
+          ..add(LifePad(
+            numberOfPlayers: widget.numberOfPlayers,
+            quarterTurns: 0,
+            color: widget.playersInfo['colors'][widget.numberOfPlayers-1],
+            id: widget.numberOfPlayers,
+            base: widget.base,
+            playersInfo: widget.playersInfo,
+            isPlaying: widget.isPlaying,
           )
         );
       }
