@@ -85,77 +85,62 @@ class _MainPageState extends State<MainPage> {
     double maxWid = MediaQuery.of(context).size.width;
     List<Widget> buildChildren(){
       if(widget.numberOfPlayers > 2 && widget.numberOfPlayers % 2 == 0){
-        return [
-          for(int i = 0; i < widget.numberOfPlayers/2; i++)
-            Expanded(
-              child: (maxHei <= maxWid)?
-              Column(
-                children: [
-                  for(int j = 0; j < 2; j++)
-                    LifePad(
-                      quarterTurns: (maxHei <= maxWid)? (j == 0? 2:0):(j == 0? 3:1),
-                      numberOfPlayers: widget.numberOfPlayers,
-                      color: widget.playersInfo['colors'][j + i * 2 + 1-1],
-                      id: j + i * 2 + 1,
-                      base: widget.base,
-                      playersInfo: widget.playersInfo,
-                      isPlaying: widget.isPlaying,
-                    )
-                ],
-              ) :
-              Row(
-                children: [
-                  for(int j = 0; j < 2; j++)
-                    LifePad(
-                      quarterTurns: (maxHei >= maxWid)? (j == 0? 1:3):(j == 0? 3:1),
-                      numberOfPlayers: widget.numberOfPlayers,
-                      color: widget.playersInfo['colors'][j + i * 2 + 1-1],
-                      id: j + i * 2 + 1,
-                      base: widget.base,
-                      playersInfo: widget.playersInfo,
-                      isPlaying: widget.isPlaying,
-                    )
-                ],
-              ),
-            ),
-        ];
+        return List.generate(widget.numberOfPlayers~/2, (index) => Expanded(
+          child: (maxHei <= maxWid)?
+          Column(
+              children: List.generate(2, (jIndex) => LifePad(
+                quarterTurns: (maxHei <= maxWid)? (jIndex == 0? 2:0):(jIndex == 0? 3:1),
+                numberOfPlayers: widget.numberOfPlayers,
+                color: widget.playersInfo['colors'][jIndex + index * 2 + 1-1],
+                id: jIndex + index * 2 + 1,
+                base: widget.base,
+                playersInfo: widget.playersInfo,
+                isPlaying: widget.isPlaying,
+              ))
+          ) :
+          Row(
+              children: List.generate(2, (jIndex) => LifePad(
+                quarterTurns: (maxHei >= maxWid)? (jIndex == 0? 1:3):(jIndex == 0? 3:1),
+                numberOfPlayers: widget.numberOfPlayers,
+                color: widget.playersInfo['colors'][jIndex + index * 2 + 1-1],
+                id: jIndex + index * 2 + 1,
+                base: widget.base,
+                playersInfo: widget.playersInfo,
+                isPlaying: widget.isPlaying,
+              ))
+          ),
+        ));
       }
 
       else if(widget.numberOfPlayers % 2 != 0){
-        return [
-          for(int i = 0; i < (widget.numberOfPlayers - widget.numberOfPlayers%2)/2; i++)
-            Expanded(
-              child: (maxHei <= maxWid)?
-                Column(
-                children: [
-                  for(int j = 0; j < 2; j++)
-                    LifePad(
-                      quarterTurns: (maxHei <= maxWid)? (j == 0? 2:0):(j == 0? 3:1),
-                      numberOfPlayers: widget.numberOfPlayers,
-                      color: widget.playersInfo['colors'][j + i * 2 + 1-1],
-                      id: j + i * 2 + 1,
-                      base: widget.base,
-                      playersInfo: widget.playersInfo,
-                      isPlaying: widget.isPlaying,
-                    )
-                ],
-              ) :
-                Row(
-                  children: [
-                    for(int j = 0; j < 2; j++)
-                      LifePad(
-                        quarterTurns: (maxHei >= maxWid)? (j == 0? 1:3):(j == 0? 3:1),
-                        numberOfPlayers: widget.numberOfPlayers,
-                        color: widget.playersInfo['colors'][j + i * 2 + 1-1],
-                        id: j + i * 2 + 1,
-                        base: widget.base,
-                        playersInfo: widget.playersInfo,
-                        isPlaying: widget.isPlaying,
-                      )
-                  ],
-                ),
+        return List.generate((widget.numberOfPlayers - widget.numberOfPlayers%2)~/2,
+          (index) => Expanded(
+            child: (maxHei <= maxWid)?
+            Column(
+              children: List.generate(2, (jIndex) => LifePad(
+                quarterTurns: (maxHei <= maxWid)? (jIndex == 0? 2:0):(jIndex == 0? 3:1),
+                numberOfPlayers: widget.numberOfPlayers,
+                color: widget.playersInfo['colors'][jIndex + index * 2 + 1-1],
+                id: jIndex + index * 2 + 1,
+                base: widget.base,
+                playersInfo: widget.playersInfo,
+                isPlaying: widget.isPlaying,
+              )),
+            ) :
+            Row(
+              children: List.generate(2, (jIndex) => LifePad(
+                quarterTurns: (maxHei >= maxWid)? (jIndex == 0? 1:3):(jIndex == 0? 3:1),
+                numberOfPlayers: widget.numberOfPlayers,
+                color: widget.playersInfo['colors'][jIndex + index * 2 + 1-1],
+                id: jIndex + index * 2 + 1,
+                base: widget.base,
+                playersInfo: widget.playersInfo,
+                isPlaying: widget.isPlaying,
+              ))
             ),
-          LifePad(
+          ),
+        )
+          ..add(LifePad(
             numberOfPlayers: widget.numberOfPlayers,
             quarterTurns: (maxHei >= maxWid)?0:3,
             color: widget.playersInfo['colors'][widget.numberOfPlayers-1],
@@ -163,22 +148,20 @@ class _MainPageState extends State<MainPage> {
             base: widget.base,
             playersInfo: widget.playersInfo,
             isPlaying: widget.isPlaying,
-          )
-        ];
+          ));
       }
 
-      return [
-        for(int i = 1; i < widget.numberOfPlayers+1; i++)
-          LifePad(
-            numberOfPlayers: widget.numberOfPlayers,
-            quarterTurns: (maxHei >= maxWid)? (i == 1? 2:0):(i == 1? 1:3),
-            color: widget.playersInfo['colors'][i-1],
-            id: i,
-            base: widget.base,
-            playersInfo: widget.playersInfo,
-            isPlaying: widget.isPlaying,
-          )
-      ];
+      return List.generate(widget.numberOfPlayers,
+        (index) => LifePad(
+          numberOfPlayers: widget.numberOfPlayers,
+          quarterTurns: (maxHei >= maxWid)? (index == 0? 2:0):(index == 0? 1:3),
+          color: widget.playersInfo['colors'][index],
+          playersInfo: widget.playersInfo,
+          isPlaying: widget.isPlaying,
+          base: widget.base,
+          id: index,
+        )
+      );
     }
 
     void resetPage(){
@@ -217,39 +200,32 @@ class _MainPageState extends State<MainPage> {
       Map<int, dynamic> display = {
         2: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for(int i = 0; i < 2; i++)
-              Column(
-                children: [
-                  Container(
-                    color: Colors.black,
-                    height: 15,
-                    width: 30,
-                  ),
-                  SizedBox(height: i != 1 ? 2 : 0),
-                ],
-              )
-          ],
+          children: List.generate(2, (index) => Padding(
+            padding: EdgeInsets.only(top: 2.0 * index),
+            child: Container(
+              color: Colors.black,
+              height: 15,
+              width: 30,
+            ),
+          ))
         ),
         3: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for(int i = 0; i < 2; i++)
-                  Row(children: [
-                    Container(
-                      color: Colors.black,
-                      height: 15,
-                      width: 14,
-                    ),
-                    SizedBox(width: i != 1 ? 2 : 0),
-                  ],
-                  )
-              ],
+            Padding(
+              padding: const EdgeInsets.only(bottom: 2),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(2, (index) => Padding(
+                  padding: EdgeInsets.only(left: 2.0 * index),
+                  child: Container(
+                    color: Colors.black,
+                    height: 15,
+                    width: 14,
+                  ),
+                ))
+              ),
             ),
-            const SizedBox(height: 2),
             Container(
               color: Colors.black,
               height: 15,
@@ -259,89 +235,61 @@ class _MainPageState extends State<MainPage> {
         ),
         4: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for(int i = 0; i < 2; i++)
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        color: Colors.black,
-                        height: 14,
-                        width: 15,
-                      ),
-                      const SizedBox(width: 2),
-                      Container(
-                        color: Colors.black,
-                        height: 14,
-                        width: 15,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: i != 2 ? 2 : 0),
-                ],
-              )
-          ],
+          children: List.generate(2, (index) => Padding(
+            padding: EdgeInsets.only(top: 2.0 * index),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(2, (rowIndex) => Padding(
+                padding: EdgeInsets.only(left: 2.0 * rowIndex),
+                child: Container(
+                  color: Colors.black,
+                  height: 14,
+                  width: 15,
+                ),
+              ))
+            ),
+          ))
         ),
         5: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for(int i = 0; i < 2; i++)
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        color: Colors.black,
-                        height: 18 / 2,
-                        width: 14,
-                      ),
-                      const SizedBox(width: 2),
-                      Container(
-                        color: Colors.black,
-                        height: 18 / 2,
-                        width: 14,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                ],
-              ),
+          children: List.generate(2, (index) => Padding(
+            padding: EdgeInsets.only(bottom: 2),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(2, (rowIndex) => Padding(
+                padding: EdgeInsets.only(left: 2.0 * rowIndex),
+                child: Container(
+                  color: Colors.black,
+                  height: 18 / 2,
+                  width: 14,
+                ),
+              ))
+            ),
+          ))
+          ..add(
             Container(
               color: Colors.black,
               height: 18 / 2,
               width: 30,
             ),
-          ],
+          )
         ),
         6: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for(int i = 0; i < 3; i++)
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        color: Colors.black,
-                        height: 18 / 2,
-                        width: 14,
-                      ),
-                      const SizedBox(width: 2),
-                      Container(
-                        color: Colors.black,
-                        height: 18 / 2,
-                        width: 14,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: i != 2 ? 2 : 0),
-                ],
-              )
-          ],
+          children: List.generate(3, (index) => Padding(
+            padding: EdgeInsets.only(bottom: index != 2 ? 2 : 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(2, (rowIndex) => Padding(
+                padding: EdgeInsets.only(left: 2.0 * rowIndex),
+                child: Container(
+                  color: Colors.black,
+                  height: 18 / 2,
+                  width: 14,
+                ),
+              ))
+            ),
+          )),
         )
       };
       return Expanded(
@@ -439,16 +387,12 @@ class _MainPageState extends State<MainPage> {
                         child: Row(
                           children: [
                             CenterMenuIconButton(
-                              onPressed: (){
-                                resetPage();
-                              },
+                              onPressed: () => resetPage(),
                               icon: MdiIcons.refresh,
                               color: Colors.black,
                             ),
                             CenterMenuIconButton(
-                              onPressed: (){
-                                changeViewMode("players");
-                              },
+                              onPressed: () => changeViewMode("players"),
                               icon: MdiIcons.accountGroup,
                               color: Colors.black,
                             ),
@@ -463,16 +407,12 @@ class _MainPageState extends State<MainPage> {
                         child: Row(
                           children: [
                             CenterMenuIconButton(
-                              onPressed: (){
-                                changeViewMode("life");
-                              },
+                              onPressed: () => changeViewMode("life"),
                               icon: MdiIcons.heartCog,
                               color: Colors.black,
                             ),
                             CenterMenuIconButton(
-                              onPressed: (){
-                                changeViewMode("dices");
-                              },
+                              onPressed: () => changeViewMode("dices"),
                               icon: MdiIcons.diceMultiple,
                               color: Colors.black,
                             ),
@@ -503,38 +443,19 @@ class _MainPageState extends State<MainPage> {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          CenterMenuIconButton(
-                            onPressed: (){
-                              setState(() {
-                                menuViewMode = "menu";
-                              });
-                            },
-                            icon: MdiIcons.arrowLeftBold,
-                            color: Colors.black,
-                          ),
-                          swapPlayerNum(2),
-                          swapPlayerNum(3),
-                        ],
-                      ),
+                  children: List.generate(5,
+                    (index) => swapPlayerNum([2,3,4,5,6][index]))
+                    ..insert(2, SizedBox(
+                        width: maxSize*1.1,
+                        height: 40,
+                      )
+                    )
+                    ..insert(0, CenterMenuIconButton(
+                      onPressed: () => setState(() => menuViewMode = "menu"),
+                      icon: MdiIcons.arrowLeftBold,
+                      color: Colors.black,
                     ),
-                    SizedBox(
-                      width: maxSize*1.1,
-                      height: 40,
-                    ),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          swapPlayerNum(4),
-                          swapPlayerNum(5),
-                          swapPlayerNum(6),
-                        ],
-                      ),
-                    ),
-                  ],
+                  )
                 ),
               ),
             ),
@@ -550,36 +471,22 @@ class _MainPageState extends State<MainPage> {
                   color: Colors.white38,
                   boxShadow: [
                     BoxShadow(
-                        color: Colors.white,
-                        blurRadius: 1
+                      color: Colors.white,
+                      blurRadius: 1
                     ),
                   ],
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          CenterMenuIconButton(
-                            onPressed: (){
-                              setState(() {
-                                menuViewMode = "menu";
-                              });
-                            },
-                            icon: MdiIcons.arrowLeftBold,
-                            color: Colors.black,
-                          ),
-                          chooseDiceToRoll(4),
-                          chooseDiceToRoll(6),
-                          chooseDiceToRoll(8),
-                          chooseDiceToRoll(10),
-                          chooseDiceToRoll(12),
-                          chooseDiceToRoll(20),
-                        ],
-                      ),
-                    ),
-                  ],
+                child: Expanded(
+                  child: Row(
+                    children: List.generate(6,
+                      (index) => chooseDiceToRoll([4,6,8,10,12,20][index]))
+                      ..insert(0, CenterMenuIconButton(
+                        onPressed: () => setState(() => menuViewMode = "menu"),
+                        icon: MdiIcons.arrowLeftBold,
+                        color: Colors.black,
+                      )
+                    )
+                  ),
                 ),
               ),
             ),
@@ -602,38 +509,19 @@ class _MainPageState extends State<MainPage> {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          CenterMenuIconButton(
-                            onPressed: (){
-                              setState(() {
-                                menuViewMode = "menu";
-                              });
-                            },
-                            icon: MdiIcons.arrowLeftBold,
-                            color: Colors.black,
-                          ),
-                          swapLife(20),
-                          swapLife(30),
-                        ],
+                  children: List.generate(5,
+                    (index) => swapLife([20,30,40,50,60][index]))
+                    ..insert(2, SizedBox(
+                        width: maxSize*1.1,
+                        height: 40,
+                      )
+                    )
+                    ..insert(0, CenterMenuIconButton(
+                        onPressed: () => setState(() => menuViewMode = "menu"),
+                        icon: MdiIcons.arrowLeftBold,
+                        color: Colors.black,
                       ),
-                    ),
-                    SizedBox(
-                      width: maxSize*1.1,
-                      height: 40,
-                    ),
-                    Expanded(
-                      child: Row(
-                        children: [
-                          swapLife(40),
-                          swapLife(50),
-                          swapLife(60),
-                        ],
-                      ),
-                    ),
-                  ],
+                    )
                 ),
               ),
             ),
@@ -650,13 +538,13 @@ class _MainPageState extends State<MainPage> {
                       color: (Colors.white).withOpacity(0.5),
                       boxShadow: const [
                         BoxShadow(
-                            color: Colors.black38,
-                            blurRadius: 10,
-                            offset: Offset(0, 10)
+                          color: Colors.black38,
+                          blurRadius: 10,
+                          offset: Offset(0, 10)
                         ),
                         BoxShadow(
-                            color: Colors.white,
-                            blurRadius: 1
+                          color: Colors.white,
+                          blurRadius: 1
                         ),
                       ]
                   ),
