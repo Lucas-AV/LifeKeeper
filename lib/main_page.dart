@@ -81,55 +81,30 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     FixedExtentScrollController lifeController = FixedExtentScrollController(initialItem: widget.base);
-    double maxHei = MediaQuery.of(context).size.height;
-    double maxWid = MediaQuery.of(context).size.width;
-    List<Widget> buildChildren(){
+
+    Column buildLifepadMatt(){
+      List<Widget> lifepadMatt = [];
       if(widget.numberOfPlayers > 2 && widget.numberOfPlayers % 2 == 0){
-        return List.generate(widget.numberOfPlayers~/2, (index) => Expanded(
-          child: (maxHei <= maxWid)?
-          Column(
-              children: List.generate(2, (jIndex) => LifePad(
-                quarterTurns: (maxHei <= maxWid)? (jIndex == 0? 2:0):(jIndex == 0? 3:1),
-                numberOfPlayers: widget.numberOfPlayers,
-                color: widget.playersInfo['colors'][jIndex + index * 2 + 1-1],
-                id: jIndex + index * 2 + 1,
-                base: widget.base,
-                playersInfo: widget.playersInfo,
-                isPlaying: widget.isPlaying,
-              ))
-          ) :
-          Row(
-              children: List.generate(2, (jIndex) => LifePad(
-                quarterTurns: (maxHei >= maxWid)? (jIndex == 0? 1:3):(jIndex == 0? 3:1),
-                numberOfPlayers: widget.numberOfPlayers,
-                color: widget.playersInfo['colors'][jIndex + index * 2 + 1-1],
-                id: jIndex + index * 2 + 1,
-                base: widget.base,
-                playersInfo: widget.playersInfo,
-                isPlaying: widget.isPlaying,
-              ))
-          ),
+        lifepadMatt = List.generate(widget.numberOfPlayers~/2, (index) => Expanded(
+          child: Row(
+            children: List.generate(2, (jIndex) => LifePad(
+              quarterTurns: jIndex == 0? 1:3,
+              numberOfPlayers: widget.numberOfPlayers,
+              color: widget.playersInfo['colors'][jIndex + index * 2 + 1-1],
+              id: jIndex + index * 2 + 1,
+              base: widget.base,
+              playersInfo: widget.playersInfo,
+              isPlaying: widget.isPlaying,
+            ))
+          )
         ));
       }
-
       else if(widget.numberOfPlayers % 2 != 0){
-        return List.generate((widget.numberOfPlayers - widget.numberOfPlayers%2)~/2,
+        lifepadMatt = List.generate((widget.numberOfPlayers - widget.numberOfPlayers%2)~/2,
           (index) => Expanded(
-            child: (maxHei <= maxWid)?
-            Column(
+            child: Row(
               children: List.generate(2, (jIndex) => LifePad(
-                quarterTurns: (maxHei <= maxWid)? (jIndex == 0? 2:0):(jIndex == 0? 3:1),
-                numberOfPlayers: widget.numberOfPlayers,
-                color: widget.playersInfo['colors'][jIndex + index * 2 + 1-1],
-                id: jIndex + index * 2 + 1,
-                base: widget.base,
-                playersInfo: widget.playersInfo,
-                isPlaying: widget.isPlaying,
-              )),
-            ) :
-            Row(
-              children: List.generate(2, (jIndex) => LifePad(
-                quarterTurns: (maxHei >= maxWid)? (jIndex == 0? 1:3):(jIndex == 0? 3:1),
+                quarterTurns: jIndex == 0? 1:3,
                 numberOfPlayers: widget.numberOfPlayers,
                 color: widget.playersInfo['colors'][jIndex + index * 2 + 1-1],
                 id: jIndex + index * 2 + 1,
@@ -139,10 +114,9 @@ class _MainPageState extends State<MainPage> {
               ))
             ),
           ),
-        )
-          ..add(LifePad(
+        )..add(LifePad(
             numberOfPlayers: widget.numberOfPlayers,
-            quarterTurns: (maxHei >= maxWid)?0:3,
+            quarterTurns: 0,
             color: widget.playersInfo['colors'][widget.numberOfPlayers-1],
             id: widget.numberOfPlayers,
             base: widget.base,
@@ -150,18 +124,21 @@ class _MainPageState extends State<MainPage> {
             isPlaying: widget.isPlaying,
           ));
       }
+      else {
+        lifepadMatt = List.generate(widget.numberOfPlayers,
+          (index) => LifePad(
+            numberOfPlayers: widget.numberOfPlayers,
+            quarterTurns: index == 0? 2:0,
+            color: widget.playersInfo['colors'][index],
+            playersInfo: widget.playersInfo,
+            isPlaying: widget.isPlaying,
+            base: widget.base,
+            id: index,
+          )
+        );
+      }
 
-      return List.generate(widget.numberOfPlayers,
-        (index) => LifePad(
-          numberOfPlayers: widget.numberOfPlayers,
-          quarterTurns: (maxHei >= maxWid)? (index == 0? 2:0):(index == 0? 1:3),
-          color: widget.playersInfo['colors'][index],
-          playersInfo: widget.playersInfo,
-          isPlaying: widget.isPlaying,
-          base: widget.base,
-          id: index,
-        )
-      );
+      return Column(children: lifepadMatt);
     }
 
     void resetPage(){
@@ -349,7 +326,7 @@ class _MainPageState extends State<MainPage> {
             "$value",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: maxWid * 0.06,
+              fontSize: MediaQuery.of(context).size.width * 0.06,
             )
           ),
         ),
@@ -363,172 +340,159 @@ class _MainPageState extends State<MainPage> {
           alignment: Alignment.center,
           children: [
             // MAIN
-            RotatedBox(
-              quarterTurns: (maxHei >= maxWid)?0:3,
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 100),
-                height: centerButtonClicked? maxSize*.5:0,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white38,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.white,
-                      blurRadius: 1
+            AnimatedContainer(
+              duration: Duration(milliseconds: 100),
+              height: centerButtonClicked? maxSize*.5:0,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white38,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white,
+                    blurRadius: 1
+                  ),
+                ],
+              ),
+              child: Visibility(
+                visible: centerButtonClicked,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          CenterMenuIconButton(
+                            onPressed: () => resetPage(),
+                            icon: MdiIcons.refresh,
+                            color: Colors.black,
+                          ),
+                          CenterMenuIconButton(
+                            onPressed: () => changeViewMode("players"),
+                            icon: MdiIcons.accountGroup,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      width: maxSize*1.1,
+                      height: 40,
+                    ),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          CenterMenuIconButton(
+                            onPressed: () => changeViewMode("life"),
+                            icon: MdiIcons.heartCog,
+                            color: Colors.black,
+                          ),
+                          CenterMenuIconButton(
+                            onPressed: () => changeViewMode("dices"),
+                            icon: MdiIcons.diceMultiple,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
-                ),
-                child: Visibility(
-                  visible: centerButtonClicked,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            CenterMenuIconButton(
-                              onPressed: () => resetPage(),
-                              icon: MdiIcons.refresh,
-                              color: Colors.black,
-                            ),
-                            CenterMenuIconButton(
-                              onPressed: () => changeViewMode("players"),
-                              icon: MdiIcons.accountGroup,
-                              color: Colors.black,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        width: maxSize*1.1,
-                        height: 40,
-                      ),
-                      Expanded(
-                        child: Row(
-                          children: [
-                            CenterMenuIconButton(
-                              onPressed: () => changeViewMode("life"),
-                              icon: MdiIcons.heartCog,
-                              color: Colors.black,
-                            ),
-                            CenterMenuIconButton(
-                              onPressed: () => changeViewMode("dices"),
-                              icon: MdiIcons.diceMultiple,
-                              color: Colors.black,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),
 
             // PLAYERS
-            RotatedBox(
-              quarterTurns: (maxHei >= maxWid)?0:3,
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 1),
-                width: double.infinity,
-                height: menuViewMode == "players" && centerButtonClicked? maxSize*.5:0,
-                decoration: BoxDecoration(
-                  color: Colors.white38,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.white,
-                      blurRadius: 1
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(5,
-                    (index) => swapPlayerNum([2,3,4,5,6][index]))
+            AnimatedContainer(
+              duration: Duration(milliseconds: 1),
+              width: double.infinity,
+              height: menuViewMode == "players" && centerButtonClicked? maxSize*.5:0,
+              decoration: BoxDecoration(
+                color: Colors.white38,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white,
+                    blurRadius: 1
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(5,
+                  (index) => swapPlayerNum([2,3,4,5,6][index]))
                     ..insert(2, SizedBox(
-                        width: maxSize*1.1,
-                        height: 40,
-                      )
+                      width: maxSize*1.1,
+                      height: 40,
                     )
+                  )
+                  ..insert(0, CenterMenuIconButton(
+                    onPressed: () => setState(() => menuViewMode = "menu"),
+                    icon: MdiIcons.arrowLeftBold,
+                    color: Colors.black,
+                  ),
+                )
+              ),
+            ),
+
+            // DICES
+            AnimatedContainer(
+              duration: Duration(milliseconds: 1),
+              width: double.infinity,
+              height: menuViewMode == "dices" && centerButtonClicked? maxSize*.5:0,
+              decoration: BoxDecoration(
+                color: Colors.white38,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white,
+                    blurRadius: 1
+                  ),
+                ],
+              ),
+              child: Expanded(
+                child: Row(
+                  children: List.generate(6,
+                    (index) => chooseDiceToRoll([4,6,8,10,12,20][index]))
                     ..insert(0, CenterMenuIconButton(
                       onPressed: () => setState(() => menuViewMode = "menu"),
                       icon: MdiIcons.arrowLeftBold,
                       color: Colors.black,
-                    ),
+                    )
                   )
                 ),
               ),
             ),
 
-            // DICES
-            RotatedBox(
-              quarterTurns: (maxHei >= maxWid)?0:3,
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 1),
-                width: double.infinity,
-                height: menuViewMode == "dices" && centerButtonClicked? maxSize*.5:0,
-                decoration: BoxDecoration(
-                  color: Colors.white38,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.white,
-                      blurRadius: 1
-                    ),
-                  ],
-                ),
-                child: Expanded(
-                  child: Row(
-                    children: List.generate(6,
-                      (index) => chooseDiceToRoll([4,6,8,10,12,20][index]))
-                      ..insert(0, CenterMenuIconButton(
-                        onPressed: () => setState(() => menuViewMode = "menu"),
-                        icon: MdiIcons.arrowLeftBold,
-                        color: Colors.black,
-                      )
-                    )
-                  ),
-                ),
-              ),
-            ),
-
-            // LIFE
-            RotatedBox(
-              quarterTurns: (maxHei >= maxWid)?0:3,
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 1),
-                width: double.infinity,
-                height: menuViewMode == "life" && centerButtonClicked? maxSize*.5:0,
-                decoration: BoxDecoration(
-                  color: Colors.white38,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.white,
-                      blurRadius: 1
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(5,
-                    (index) => swapLife([20,30,40,50,60][index]))
-                    ..insert(2, SizedBox(
-                        width: maxSize*1.1,
-                        height: 40,
-                      )
-                    )
-                    ..insert(0, CenterMenuIconButton(
-                        onPressed: () => setState(() => menuViewMode = "menu"),
-                        icon: MdiIcons.arrowLeftBold,
-                        color: Colors.black,
-                      ),
-                    )
-                ),
-              ),
-            ),
-
+            // Life
             Stack(
               alignment: Alignment.center,
               children: [
+                AnimatedContainer(
+                  duration: Duration(milliseconds: 1),
+                  width: double.infinity,
+                  height: menuViewMode == "life" && centerButtonClicked? maxSize*.5:0,
+                  decoration: BoxDecoration(
+                    color: Colors.white38,
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.white,
+                          blurRadius: 1
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5,
+                              (index) => swapLife([20,30,40,50,60][index]))
+                        ..insert(2, SizedBox(
+                          width: maxSize*1.1,
+                          height: 40,
+                        )
+                        )
+                        ..insert(0, CenterMenuIconButton(
+                          onPressed: () => setState(() => menuViewMode = "menu"),
+                          icon: MdiIcons.arrowLeftBold,
+                          color: Colors.black,
+                        ),
+                        )
+                  ),
+                ),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   height: menuViewMode == "life"?  maxSize:0,
@@ -598,54 +562,50 @@ class _MainPageState extends State<MainPage> {
               ],
             ),
 
-
             // BUTTON
-            RotatedBox(
-              quarterTurns: (maxHei >= maxWid)? 0:3,
-              child: AnimatedContainer(
-                  duration: Duration(milliseconds: 100),
-                  height: centerButtonClicked?
-                  menuViewMode == "dices" || menuViewMode == "life"? 0:maxSize:40,
-                  width: centerButtonClicked?
-                  menuViewMode == "dices" || menuViewMode == "life"? 0:maxSize:40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(100),
-                    color: centerButtonClicked?Colors.white38:Colors.black38,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black38,
-                        blurRadius: centerButtonClicked?3:0,
-                      ),
-                      BoxShadow(
+            AnimatedContainer(
+                duration: Duration(milliseconds: 100),
+                height: centerButtonClicked?
+                menuViewMode == "dices" || menuViewMode == "life"? 0:maxSize:40,
+                width: centerButtonClicked?
+                menuViewMode == "dices" || menuViewMode == "life"? 0:maxSize:40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: centerButtonClicked?Colors.white38:Colors.black38,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black38,
+                      blurRadius: centerButtonClicked?3:0,
+                    ),
+                    BoxShadow(
                         color: centerButtonClicked?Colors.white:Colors.black,
                         blurRadius: 1.1
-                      ),
-                    ],
-                  ),
-                  child: GestureDetector(
-                      onTap: (){
-                        setState(() {
-                          if(widget.playersInfo["activeTemp"].every((element) => element == false)){
-                            centerButtonClicked = centerButtonClicked? false:true;
-                            menuViewMode = "main";
-                          }
-                          // widget.numberOfPlayers++;
-                          // if(widget.numberOfPlayers > 6){
-                          //   widget.numberOfPlayers = 2;
-                          // }
-                        });
+                    ),
+                  ],
+                ),
+                child: GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        if(widget.playersInfo["activeTemp"].every((element) => element == false)){
+                          centerButtonClicked = centerButtonClicked? false:true;
+                          menuViewMode = "main";
+                        }
+                        // widget.numberOfPlayers++;
+                        // if(widget.numberOfPlayers > 6){
+                        //   widget.numberOfPlayers = 2;
+                        // }
+                      });
+                    },
+                    child: LayoutBuilder(
+                      builder: (context,constraints){
+                        return Icon(
+                          MdiIcons.cubeOutline,
+                          color: centerButtonClicked?Colors.black:Colors.white,
+                          size: constraints.maxWidth* (centerButtonClicked? 0.8:0.75),
+                        );
                       },
-                      child: LayoutBuilder(
-                        builder: (context,constraints){
-                          return Icon(
-                            MdiIcons.cubeOutline,
-                            color: centerButtonClicked?Colors.black:Colors.white,
-                            size: constraints.maxWidth* (centerButtonClicked? 0.8:0.75),
-                          );
-                        },
-                      )
-                  )
-              ),
+                    )
+                )
             ),
           ],
         ),
@@ -655,81 +615,47 @@ class _MainPageState extends State<MainPage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: SizedBox(
-          height: maxHei,
-          width: maxWid,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              (maxHei >= maxWid)?
-              Column(
-                children: buildChildren(),
-              ) :
-              Row(
-                children: buildChildren(),
+        body: Stack(
+          alignment: Alignment.center,
+          children: [
+            buildLifepadMatt(),
+            RawMaterialButton(
+              constraints: centerButtonClicked || !widget.isPlaying?
+              BoxConstraints.expand() :
+              BoxConstraints.expand(width: 0,height: 0),
+              onPressed: (){
+                if(widget.isPlaying){
+                  setState(() {
+                    centerButtonClicked = false;
+                    menuViewMode = "main";
+                  });
+                } else {
+                  setState(() => play = true);
+                  Navigator.pop(context);
+                }
+              },
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 100),
+                color: widget.isPlaying? Colors.black54:Colors.transparent,
               ),
-              widget.isPlaying?
-                Visibility(
-                visible: centerButtonClicked,
-                  child: GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        centerButtonClicked = false;
-                        menuViewMode = "main";
-                      });
-                    },
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 100),
-                      height: MediaQuery.of(context).size.height,
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.black54,
-                    ),
-                  ),
-              ) :
-                RawMaterialButton(
-                  onPressed: (){
-                    setState(() {
-                      play = true;
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                  ),
-                ),
+            ),
 
-              if(widget.isPlaying)
-                widget.numberOfPlayers % 4 == 0 || widget.numberOfPlayers < 5? centerButton() :
-                (maxHei >= maxWid)?
-                Column(
-                  children: [
-                    Expanded(
-                      flex: 13,
-                      child: SizedBox(),
-                    ),
-                    centerButton(),
-                    Expanded(
-                      flex: 6,
-                      child: SizedBox(),
-                    )
-                  ],
-                ) :
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 13,
-                      child: SizedBox(),
-                    ),
-                    centerButton(),
-                    Expanded(
-                      flex: 6,
-                      child: SizedBox(),
-                    )
-                  ],
-                )
-            ],
-          )
+            if(widget.isPlaying)
+              widget.numberOfPlayers % 4 == 0 || widget.numberOfPlayers < 5?
+              centerButton() : Column(
+                children: [
+                  Expanded(
+                    flex: 13,
+                    child: SizedBox(),
+                  ),
+                  centerButton(),
+                  Expanded(
+                    flex: 6,
+                    child: SizedBox(),
+                  )
+                ],
+              )
+          ],
         ),
       ),
     );
