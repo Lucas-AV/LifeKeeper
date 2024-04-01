@@ -76,7 +76,7 @@ class _MainPageState extends State<MainPage> {
     double maxHei = MediaQuery.of(context).size.height;
     double biggerSide = heightBiggerThanWidth()? maxHei:maxWid;
     double smallerSide = heightBiggerThanWidth()? maxWid : maxHei;
-    double bottomPosition = (widget.numberOfPlayers <= 4? biggerSide/2 : biggerSide/3) - maxSize/2;
+    double bottomPosition = (widget.numberOfPlayers <= 4? biggerSide/2 : biggerSide/3) - maxSize/1.25;
 
     Column buildLifepadMatt(){
       List<Widget> listPadGenerator(length) => List.generate(length~/2, (index) => Expanded(
