@@ -76,7 +76,7 @@ class _MainPageState extends State<MainPage> {
     double maxHei = MediaQuery.of(context).size.height;
     double biggerSide = heightBiggerThanWidth()? maxHei:maxWid;
     double smallerSide = heightBiggerThanWidth()? maxWid : maxHei;
-    double bottomPosition = (widget.numberOfPlayers <= 4? biggerSide/2 : biggerSide/3) - maxSize/1.25;
+    double bottomPosition = (widget.numberOfPlayers <= 4? biggerSide/2 : biggerSide/3) - maxSize/2;
 
     Column buildLifepadMatt(){
       List<Widget> listPadGenerator(length) => List.generate(length~/2, (index) => Expanded(
@@ -341,8 +341,8 @@ class _MainPageState extends State<MainPage> {
                     color: Colors.white38,
                     boxShadow: [
                       BoxShadow(
-                          color: Colors.white,
-                          blurRadius: 1
+                        color: Colors.white,
+                        blurRadius: 1
                       ),
                     ],
                   ),
@@ -587,10 +587,18 @@ class _MainPageState extends State<MainPage> {
                         },
                         child: LayoutBuilder(
                           builder: (context,constraints){
-                            return Icon(
-                              MdiIcons.cubeOutline,
-                              color: centerButtonClicked?Colors.black:Colors.white,
-                              size: constraints.maxWidth* (centerButtonClicked? 0.8:0.75),
+                            return Container(
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(100)
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  MdiIcons.cubeOutline,
+                                  color: centerButtonClicked?Colors.black:Colors.white,
+                                  size: constraints.maxWidth* (centerButtonClicked? 0.8:0.65),
+                                ),
+                              ),
                             );
                           },
                         )
