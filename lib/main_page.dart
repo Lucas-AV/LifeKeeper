@@ -438,17 +438,15 @@ class _MainPageState extends State<MainPage> {
                       ),
                     ],
                   ),
-                  child: Expanded(
-                    child: Row(
-                        children: List.generate(6,
-                                (index) => chooseDiceToRoll([4,6,8,10,12,20][index]))
-                          ..insert(0, CenterMenuIconButton(
-                            onPressed: () => setState(() => menuViewMode = "menu"),
-                            icon: MdiIcons.arrowLeftBold,
-                            color: Colors.black,
-                          )
-                          )
-                    ),
+                  child: Row(
+                      children: List.generate(6,
+                              (index) => chooseDiceToRoll([4,6,8,10,12,20][index]))
+                        ..insert(0, CenterMenuIconButton(
+                          onPressed: () => setState(() => menuViewMode = "menu"),
+                          icon: MdiIcons.arrowLeftBold,
+                          color: Colors.black,
+                        )
+                        )
                   ),
                 ),
 
