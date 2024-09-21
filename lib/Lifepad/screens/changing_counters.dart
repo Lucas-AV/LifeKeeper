@@ -45,26 +45,13 @@ class _ChaningCounterScreenState extends State<ChaningCounterScreen> {
                           width: widget.constraints.maxHeight * 0.25, height: widget.constraints.maxHeight * 0.25));
                 }
 
-                return Stack(
-                  children: [
-                    Positioned(
-                      bottom: 1,
-                      left: 0,
-                      right: 0,
-                      child: Icon(Icons.more_horiz_rounded,
-                          size: widget.constraints.maxHeight * .066,
-                          color: Colors.white
-                              .withOpacity(widget.lifepadModel.currentTypeOfCounter == currentCounter ? 1 : 0.0)),
-                    ),
-                    LifepadIconButton(
-                      constraints: widget.constraints,
-                      iconData: universal.typesOfCounters[currentCounter],
-                      iconColor: Colors.white
-                          .withOpacity(widget.lifepadModel.currentTypeOfCounter == currentCounter ? 1 : 0.50),
-                      onPressed: () => widget.onChangingCounter(currentCounter),
-                      iconSizeMultiplier: 0.2,
-                    ),
-                  ],
+                return LifepadIconButton(
+                  constraints: widget.constraints,
+                  iconData: universal.typesOfCounters[currentCounter],
+                  iconColor: Colors.white
+                      .withOpacity(widget.lifepadModel.currentTypeOfCounter == currentCounter ? 1 : 0.25),
+                  onPressed: () => widget.onChangingCounter(currentCounter),
+                  iconSizeMultiplier: 0.2,
                 );
               }),
             );
