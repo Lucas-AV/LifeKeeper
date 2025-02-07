@@ -1,5 +1,4 @@
 import 'package:lifekeeper/GameMatt/game_matt_page.dart';
-import 'package:wakelock/wakelock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'Old/main_page.dart';
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
     // int numberOfPlayers = 2;
     // int maxPlayers = 8;
     // int base = 40;
-    Wakelock.enable();
+    // Wakelock.enable();
     if(Platform.isAndroid || Platform.isIOS){
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
