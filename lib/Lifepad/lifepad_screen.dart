@@ -3,6 +3,7 @@ import 'package:lifekeeper/Lifepad/components/button_column.dart';
 import 'package:lifekeeper/Lifepad/components/life_text.dart';
 import 'package:lifekeeper/Lifepad/components/lifepad_icon_button.dart';
 import 'package:lifekeeper/Lifepad/lifepad_model.dart';
+import 'package:lifekeeper/Lifepad/screens/changing_colors.dart';
 import 'package:lifekeeper/Lifepad/screens/lifepad_death_screen.dart';
 import 'package:lifekeeper/Lifepad/style/lifepad_screen_decoration.dart';
 import 'package:lifekeeper/Lifepad/screens/changing_counters.dart';
@@ -21,10 +22,17 @@ class _LifepadScreenState extends State<LifepadScreen> {
   late String currentCounter;
   bool isAttacking = false;
   bool isChangingCounter = false;
+  bool isChaningColor = false;
 
   setDead() {
     setState(() {
       lifepadModel.isDead = !lifepadModel.isDead;
+    });
+  }
+
+  setChaningColors(){
+    setState(() {
+      isChaningColor = !isChaningColor;
     });
   }
 
@@ -98,7 +106,9 @@ class _LifepadScreenState extends State<LifepadScreen> {
                       LifepadIconButton(
                         constraints: constraints,
                         alignment: Alignment.topLeft,
+                        iconSizeMultiplier: 0.13,
                         iconData: Icons.color_lens_outlined,
+                        onPressed: setChaningColors,
                       ),
                       LifepadIconButton(
                         constraints: constraints,
@@ -112,7 +122,12 @@ class _LifepadScreenState extends State<LifepadScreen> {
                         onPressed: setChangingCounter
                       ),
 
-                      
+                      ChangingColors(
+                        lifepadModel: lifepadModel,
+                        constraints: constraints,
+                        isCurrent: isChaningColor,
+                        onChangingColor: setChaningColors,
+                      ),
                       ChaningCounterScreen(
                         constraints: constraints,
                         lifepadModel: lifepadModel,
