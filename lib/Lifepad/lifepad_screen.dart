@@ -81,7 +81,12 @@ class _LifepadScreenState extends State<LifepadScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return SizedBox(
+      width: MediaQuery.of(context).size.width*(
+        universal.maxNumberOfPlayers % 2 != 0 && 
+        universal.maxNumberOfPlayers == widget.index + 1? 0.5:1
+      ),
+      height: MediaQuery.of(context).size.height*0.33,
       child: RotatedBox(
           quarterTurns: (widget.index < universal.maxNumberOfPlayers / 2) ? 1 : 3,
           child: LayoutBuilder(
